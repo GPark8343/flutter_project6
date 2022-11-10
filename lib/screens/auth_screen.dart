@@ -18,7 +18,7 @@ class _AuthScreenState extends State<AuthScreen> {
   var _isLoading = false;
 
   void _submitAuthForm(String email, String password, String username,
-      File image, bool isLogin, BuildContext ctx) async {
+      File? image, bool isLogin, BuildContext ctx) async {
     UserCredential authResult;
     try {
       setState(() {
@@ -36,7 +36,7 @@ class _AuthScreenState extends State<AuthScreen> {
             .child('user_image')
             .child('${authResult.user?.uid}.jpg');
 
-        await ref.putFile(image);
+        await ref.putFile(image!);
 
 final url = await ref.getDownloadURL();
 

@@ -13,7 +13,7 @@ class ChatScreen extends StatelessWidget {
       appBar: AppBar(
         title: Text('FlutterChat'),
         actions: [
-          DropdownButton(
+          DropdownButton(underline:Container(),
               icon: Icon(
                 Icons.more_vert,
                 color: Theme.of(context).primaryIconTheme.color,

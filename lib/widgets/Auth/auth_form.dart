@@ -6,8 +6,8 @@ import 'package:flutter/material.dart';
 class AuthForm extends StatefulWidget {
   AuthForm(this.submitFn, this.isLoading);
 
-  final void Function(String email, String password, String userName, File image,
-      bool isLogin, BuildContext ctx) submitFn;
+  final void Function(String email, String password, String userName,
+      File? image, bool isLogin, BuildContext ctx) submitFn;
 
   final bool isLoading;
 
@@ -32,14 +32,15 @@ class _AuthFormState extends State<AuthForm> {
     FocusScope.of(context).unfocus();
     if (_userImageFile == null && !_isLogin) {
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-        content: Text('Please pick an image.'),backgroundColor: Theme.of(context).errorColor,
+        content: Text('Please pick an image.'),
+        backgroundColor: Theme.of(context).errorColor,
       ));
       return;
     }
     if (isValid!) {
       _formKey.currentState?.save();
-      widget.submitFn(_userEmail.trim(), _userPassword.trim(), _userName.trim(),_userImageFile!,
-          _isLogin, context);
+      widget.submitFn(_userEmail.trim(), _userPassword.trim(), _userName.trim(),
+          _userImageFile, _isLogin, context);
     }
   }
 
@@ -59,6 +60,9 @@ class _AuthFormState extends State<AuthForm> {
                     if (!_isLogin) UserImagePicker(_pickedImage),
                     TextFormField(
                       key: ValueKey('email'),
+                      autocorrect: false,
+                      textCapitalization: TextCapitalization.none,
+                      enableSuggestions: false,
                       validator: (value) {
                         if (value!.isEmpty || !value.contains('@')) {
                           return 'Please enter a valid email address.';
@@ -74,6 +78,9 @@ class _AuthFormState extends State<AuthForm> {
                     if (!_isLogin)
                       TextFormField(
                         key: ValueKey('username'),
+                        autocorrect: true,
+                        textCapitalization: TextCapitalization.words,
+                        enableSuggestions: false,
                         validator: (value) {
                           if (value!.isEmpty || value.length < 4) {
                             return 'Please enter at least 4 characters.';
