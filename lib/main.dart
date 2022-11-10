@@ -1,5 +1,6 @@
-import 'package:chat_app/screens/auth_screen.dart';
-import 'package:chat_app/screens/splash_screen.dart';
+import '../screens/auth_screen.dart';
+import '../screens/tap_screen.dart';
+import '../screens/splash_screen.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
@@ -36,11 +37,13 @@ class MyApp extends StatelessWidget {
           }
           if (userSnapshot
               .hasData /*|| FirebaseAuth.instance.currentUser != null*/) {
-            return ChatScreen();
+            return TapScreen();
           }
           return AuthScreen();
         },
-      ),
+      ),routes: {
+
+      },
     );
   }
 }
