@@ -1,10 +1,10 @@
-
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import './chat_list_screen.dart';
-import './chat_screen.dart';
-import './map_screen.dart';
-import './restaurant_list_screen.dart';
+import 'package:ifc_project1/models/place.dart';
+import 'package:ifc_project1/screens/chat_list_screen.dart';
+import 'package:ifc_project1/screens/chat_screen.dart';
+import 'package:ifc_project1/screens/map_screen.dart';
+import 'package:ifc_project1/screens/restaurant_list_screen.dart';
 
 class TapScreen extends StatefulWidget {
   const TapScreen({super.key});
@@ -21,9 +21,12 @@ class _TapScreenState extends State<TapScreen> {
   void initState() {
     _pages = [
       {'page': RestaurantListScreen(), 'title': 'List'},
-      {'page': MapScreen(), 'title': 'Map'},
-      {'page': ChatScreen(), 'title': 'Chat'},
-
+      {
+        'page': MapScreen(
+        ),
+        'title': 'Map'
+      },
+      {'page': ChatListScreen(), 'title': 'Chat'},
     ];
     super.initState();
   }
@@ -37,8 +40,11 @@ class _TapScreenState extends State<TapScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text(_pages[_selectedPageIndex]['title'] as String), actions: [
-          DropdownButton(underline:Container(),
+      appBar: AppBar(
+        title: Text(_pages[_selectedPageIndex]['title'] as String),
+        actions: [
+          DropdownButton(
+              underline: Container(),
               icon: Icon(
                 Icons.more_vert,
                 color: Theme.of(context).primaryIconTheme.color,
@@ -66,7 +72,7 @@ class _TapScreenState extends State<TapScreen> {
               })
         ],
       ),
-     body: _pages[_selectedPageIndex]['page'] as Widget,
+      body: _pages[_selectedPageIndex]['page'] as Widget,
       bottomNavigationBar: BottomNavigationBar(
           onTap: _selectPage,
           backgroundColor: Theme.of(context).primaryColor,
@@ -83,7 +89,7 @@ class _TapScreenState extends State<TapScreen> {
                 backgroundColor: Theme.of(context).primaryColor,
                 icon: Icon(Icons.map),
                 label: 'map'),
-                 BottomNavigationBarItem(
+            BottomNavigationBarItem(
                 backgroundColor: Theme.of(context).primaryColor,
                 icon: Icon(Icons.chat),
                 label: 'chat'),
