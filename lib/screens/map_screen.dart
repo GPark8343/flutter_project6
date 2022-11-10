@@ -32,8 +32,8 @@ class _MapScreenState extends State<MapScreen> {
     try {
       final locData = await Location().getLocation();
 
-      currentLatitude = locData.latitude;
-      currentLongitude = locData.longitude;
+        currentLatitude = locData.latitude;
+        currentLongitude = locData.longitude;
 
     } catch (error) {
       return;
@@ -46,25 +46,31 @@ class _MapScreenState extends State<MapScreen> {
       body: FutureBuilder(
           future: _getCurrentUserLocation(),
           builder: (ctx, snapshot) {
-           return snapshot.connectionState == ConnectionState.waiting?  Center(child: CircularProgressIndicator(),):
-             GoogleMap(
-              initialCameraPosition: CameraPosition(
-                target: LatLng(currentLatitude!,
-                    currentLongitude!),
-                zoom: 16,
-              ),
-              onTap: widget.isSelecting ? _selectLocation : null,
-              markers: (_pickedLocation == null && widget.isSelecting)
-                  ? {}
-                  : {
-                      Marker(
-                          markerId: MarkerId('m1'),
-                          position: _pickedLocation ??
-                              LatLng(currentLatitude!,
-                    currentLongitude!))
-                    },
-            );
+            return snapshot.connectionState == ConnectionState.waiting
+                ? Center(
+                    child: CircularProgressIndicator(),
+                  )
+                : GoogleMap(
+                    initialCameraPosition: CameraPosition(
+                      target: LatLng(currentLatitude!, currentLongitude!),
+                      zoom: 17,
+                    ),
+                    onTap: widget.isSelecting ? _selectLocation : null,
+                    markers: (_pickedLocation == null && widget.isSelecting)
+                        ? {}
+                        : {
+                            Marker(
+                                markerId: MarkerId('m1'),
+                                position: _pickedLocation ??
+                                    LatLng(currentLatitude!, currentLongitude!))
+                          },
+                  );
           }),
+      floatingActionButton: FloatingActionButton(
+        onPressed: _getCurrentUserLocation,
+        tooltip: 'refresh',
+        child: new Icon(Icons.refresh),
+      ),
     );
   }
 }
