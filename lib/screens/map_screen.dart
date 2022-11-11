@@ -1,73 +1,88 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:location/location.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 
 import '../models/place.dart';
 
 class MapScreen extends StatefulWidget {
-  PlaceLocation initialLocation;
-  final bool isSelecting;
 
-  MapScreen(
-      {this.initialLocation =
-          const PlaceLocation(latitude: 37.586345, longitude: 127.029383),
-      this.isSelecting = false});
+
+  MapScreen();
 
   @override
   State<MapScreen> createState() => _MapScreenState();
 }
 
 class _MapScreenState extends State<MapScreen> {
-  LatLng? _pickedLocation;
-  double? currentLatitude = 37.586345;
-  double? currentLongitude = 127.029383;
 
-  void _selectLocation(LatLng position) {
-    setState(() {
-      _pickedLocation = position;
-    });
-  }
+  GoogleMapController? _mapController;
+  Location? _location = Location();
+  LocationData? currentLocation;
 
-  Future<void> _getCurrentUserLocation() async {
+
+  
+ 
+  Future<void> _getCurrentUserLocation2() async {
     try {
       final locData = await Location().getLocation();
-
-        currentLatitude = locData.latitude;
-        currentLongitude = locData.longitude;
-
+      setState(() {
+         currentLocation = locData;
+      });
     } catch (error) {
       return;
     }
   }
 
+  
+
+  void _onMapCreated(GoogleMapController _cntrl) {
+    _mapController = _cntrl;
+    _location?.onLocationChanged.listen((l) {
+      _mapController?.animateCamera(
+        CameraUpdate.newCameraPosition(
+          CameraPosition(target: LatLng(l.latitude!, l.longitude!), zoom: 17),
+        ),
+      );
+    });
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _getCurrentUserLocation2();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: FutureBuilder(
-          future: _getCurrentUserLocation(),
-          builder: (ctx, snapshot) {
-            return snapshot.connectionState == ConnectionState.waiting
-                ? Center(
-                    child: CircularProgressIndicator(),
-                  )
-                : GoogleMap(
-                    initialCameraPosition: CameraPosition(
-                      target: LatLng(currentLatitude!, currentLongitude!),
-                      zoom: 17,
-                    ),
-                    onTap: widget.isSelecting ? _selectLocation : null,
-                    markers: (_pickedLocation == null && widget.isSelecting)
-                        ? {}
-                        : {
-                            Marker(
-                                markerId: MarkerId('m1'),
-                                position: _pickedLocation ??
-                                    LatLng(currentLatitude!, currentLongitude!))
-                          },
-                  );
-          }),
+      body: currentLocation == null
+          ? Center(
+              child: CircularProgressIndicator(),
+            )
+          : GoogleMap(
+              initialCameraPosition: CameraPosition(
+                target: LatLng(
+                    currentLocation!.latitude!, currentLocation!.longitude!),
+                zoom: 17,
+              ),
+              // markers: (_pickedLocation == null && widget.isSelecting)
+              //     ? {}
+              //     : {
+              //         Marker(
+              //             markerId: MarkerId('m1'),
+              //             position: _pickedLocation ??
+              //                 LatLng(currentLocation!.latitude!,
+              //                     currentLocation!.longitude!))
+              //       },
+              onMapCreated: _onMapCreated,
+              myLocationEnabled: true,
+            ),
       floatingActionButton: FloatingActionButton(
-        onPressed: _getCurrentUserLocation,
+        onPressed: _getCurrentUserLocation2,
         tooltip: 'refresh',
         child: new Icon(Icons.refresh),
       ),
