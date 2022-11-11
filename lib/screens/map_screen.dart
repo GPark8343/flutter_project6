@@ -1,8 +1,10 @@
 import 'dart:async';
-
+import 'dart:convert';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:location/location.dart';
+import 'package:http/http.dart' as http;
 
 class MapScreen extends StatefulWidget {
   MapScreen();
@@ -14,6 +16,7 @@ class MapScreen extends StatefulWidget {
 class _MapScreenState extends State<MapScreen> {
   Completer<GoogleMapController> _controller = Completer();
   LocationData? currentLocation;
+  List<Marker> _markers = [];
 
   Future<void> _getCurrentUserLocation() async {
     try {
@@ -35,10 +38,51 @@ class _MapScreenState extends State<MapScreen> {
     controller.animateCamera(CameraUpdate.newCameraPosition(_currentLoc));
   }
 
+  Future<void> getPlaceAddress(double lat, double lng) async {
+    final url = Uri.parse(
+        'https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=$lat%2C$lng&radius=100&type=restaurant&key=AIzaSyA2xDDzNjtYm9Z5KG0EF8wzPLDOY1o3CNE');
+    final response = await http.get(url);
+    (json.decode(response.body)['results'] as List).forEach((element) {
+      print(element['name']);
+    });
+  } //https://developers.google.com/maps/documentation/places/web-service/search-nearby 요거 참고['geometry']['location']['lat']
+
+  void _sendPlace(double lat, double lng) async {
+    final url = Uri.parse(
+        'https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=$lat%2C$lng&radius=50000&type=restaurant&key=AIzaSyA2xDDzNjtYm9Z5KG0EF8wzPLDOY1o3CNE');
+    final response = await http.get(url);
+    (json.decode(response.body)['results'] as List).forEach((place) {
+      setState(() {
+    _markers.add(Marker(
+        markerId: MarkerId(place['place_id']),
+        draggable: false,
+        onTap: () => print(place['name']),
+        position: LatLng( place['geometry']['location']['lat'],place['geometry']['location']['lng'])));
+  });
+      // FirebaseFirestore.instance.collection('place-list').add({
+      //   'name': place['name'],
+      //   'latitude': place['geometry']['location']['lat'],
+      //   'longitude': place['geometry']['location']['lng']
+      // });
+      
+    });
+  }
+
+  // void addMarker() {setState(() {
+  //   _markers.add(Marker(
+  //       markerId: MarkerId("1"),
+  //       draggable: true,
+  //       onTap: () => print("Marker!"),
+  //       position: LatLng( 37.5851446,127.029714)));
+  // });
+    
+  // }
+
   @override
   void initState() {
     super.initState();
     _getCurrentUserLocation();
+   
   }
 
   @override
@@ -54,6 +98,8 @@ class _MapScreenState extends State<MapScreen> {
                     currentLocation!.latitude!, currentLocation!.longitude!),
                 zoom: 17,
               ),
+              markers: Set.from(_markers),
+
               // markers: (_pickedLocation == null && widget.isSelecting)
               //     ? {}
               //     : {
@@ -69,7 +115,14 @@ class _MapScreenState extends State<MapScreen> {
               myLocationEnabled: true,
             ),
       floatingActionButton: FloatingActionButton(
-        onPressed: _goToTheCurrentLoc,
+        onPressed: () {
+          _goToTheCurrentLoc;
+          getPlaceAddress(
+              currentLocation!.latitude!, currentLocation!.longitude!);
+                _sendPlace (
+          currentLocation!.latitude!, currentLocation!.longitude!);
+          // addMarker();
+        },
         tooltip: 'refresh',
         child: new Icon(Icons.refresh),
       ),
