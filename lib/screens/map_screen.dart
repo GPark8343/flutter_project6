@@ -19,6 +19,10 @@ class _MapScreenState extends State<MapScreen> {
   Completer<GoogleMapController> _controller = Completer();
   LocationData? currentLocation;
   List<Marker> _markers = [];
+  CollectionReference placeList = FirebaseFirestore.instance
+      .collection('users')
+      .doc(FirebaseAuth.instance.currentUser?.uid)
+      .collection('place-list');
 
   Future<void> _getCurrentUserLocation() async {
     try {
@@ -54,15 +58,17 @@ class _MapScreenState extends State<MapScreen> {
         'https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=$lat%2C$lng&radius=50000&type=restaurant&key=AIzaSyA2xDDzNjtYm9Z5KG0EF8wzPLDOY1o3CNE');
     final response = await http.get(url);
     (json.decode(response.body)['results'] as List).forEach((place) async {
-      setState(() {
-        _markers.add(Marker(
-            markerId: MarkerId(place['place_id']),
-            draggable: false,
-            onTap: () => print(place['name']),
-            position: LatLng(place['geometry']['location']['lat'],
-                place['geometry']['location']['lng'])));
-      });
-   
+      if (this.mounted) {
+        setState(() {
+          _markers.add(Marker(
+              markerId: MarkerId(place['place_id']),
+              draggable: false,
+              onTap: () => print(place['name']),
+              position: LatLng(place['geometry']['location']['lat'],
+                  place['geometry']['location']['lng'])));
+        });
+      }
+
       // try {
       //   await FirebaseFirestore.instance
       //       .collection('users')
@@ -110,6 +116,18 @@ class _MapScreenState extends State<MapScreen> {
 
   // }
 
+  Future<void> batchDelete() {
+    WriteBatch batch = FirebaseFirestore.instance.batch();
+
+    return placeList.get().then((querySnapshot) {
+      querySnapshot.docs.forEach((document) {
+        batch.delete(document.reference);
+      });
+
+      return batch.commit();
+    });
+  }
+
   @override
   void initState() {
     super.initState();
@@ -146,9 +164,10 @@ class _MapScreenState extends State<MapScreen> {
               myLocationEnabled: true,
             ),
       floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          _goToTheCurrentLoc;
-          getPlaceAddress(
+        onPressed: () async {
+          await batchDelete();
+          await _goToTheCurrentLoc;
+          await getPlaceAddress(
               currentLocation!.latitude!, currentLocation!.longitude!);
           _sendPlace(currentLocation!.latitude!, currentLocation!.longitude!);
           // addMarker();
