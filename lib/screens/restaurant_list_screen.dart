@@ -1,24 +1,39 @@
+import 'dart:io';
+import 'dart:math';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 
 class RestaurantListScreen extends StatelessWidget {
-  const RestaurantListScreen({super.key});
+
 
   @override
   Widget build(BuildContext context) {
-    return Center(child: Text('여기에 식당 리스트 올꺼임'),);
+    return StreamBuilder(
+      stream: FirebaseFirestore.instance
+          .collection('users')
+          .doc(FirebaseAuth.instance.currentUser?.uid)
+          .collection('place-list').orderBy('distance', descending: false)
+          .snapshots(),
+      builder: (ctx, placeSnapshot) {
+        if (placeSnapshot.connectionState == ConnectionState.waiting) {
+          return Center(
+            child: CircularProgressIndicator(),
+          );
+        }
+        final placeDocs = placeSnapshot.data?.docs;
+        return ListView.builder(
+            itemCount: placeDocs?.length,
+            itemBuilder: (context, index) => ListTile(
+                  leading: CircleAvatar(
+                    backgroundColor: Colors.amber,
+                    // backgroundImage: FileImage(File(placeDocs?[index]['image'])),  // 이거 오류 걍 내가 이미지 넣자 어차피 가게별 이미지 존재 X
+                  ),
+                  title: Text(placeDocs?[index]['name']),
+                  subtitle: Text('${placeDocs?[index]['distance']}m'),
+                ));
+      },
+    );
   }
 }
-// 아래처럼 ListView.builder 활용하고 위젯 여러개로 구분한 뒤, firebase에서 데이터 올리고 받아옴
-// ListView.builder(
-//           reverse: true,
-//           itemCount: chatDocs?.length,
-//           itemBuilder: (context, index) => MessageBubble(
-//             chatDocs?[index]['text'],
-//             FirebaseAuth.instance.currentUser?.uid ==
-//                 chatDocs?[index]['userId'],
-//             chatDocs?[index]['username'],
-//              chatDocs?[index]['userImage'],
-//             key: ValueKey(chatDocs?[index].id),
-//           ),
-//         );
-//       },

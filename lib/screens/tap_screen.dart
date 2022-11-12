@@ -1,6 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:ifc_project1/models/place.dart';
+
 import 'package:ifc_project1/screens/chat_list_screen.dart';
 import 'package:ifc_project1/screens/chat_screen.dart';
 import 'package:ifc_project1/screens/map_screen.dart';
@@ -21,11 +21,7 @@ class _TapScreenState extends State<TapScreen> {
   void initState() {
     _pages = [
       {'page': RestaurantListScreen(), 'title': 'List'},
-      {
-        'page': MapScreen(
-        ),
-        'title': 'Map'
-      },
+      {'page': MapScreen(), 'title': 'Map'},
       {'page': ChatListScreen(), 'title': 'Chat'},
     ];
     super.initState();

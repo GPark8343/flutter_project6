@@ -44,7 +44,7 @@ final url = await ref.getDownloadURL();
 
         await FirebaseFirestore.instance
             .collection('users')
-            .doc(authResult.user?.uid)
+            .doc(authResult.user?.uid) 
             .set({
           'username': username,
           'email': email,

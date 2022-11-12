@@ -1,10 +1,12 @@
 import 'dart:async';
 import 'dart:convert';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:location/location.dart';
 import 'package:http/http.dart' as http;
+import 'dart:math';
 
 class MapScreen extends StatefulWidget {
   MapScreen();
@@ -51,21 +53,51 @@ class _MapScreenState extends State<MapScreen> {
     final url = Uri.parse(
         'https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=$lat%2C$lng&radius=50000&type=restaurant&key=AIzaSyA2xDDzNjtYm9Z5KG0EF8wzPLDOY1o3CNE');
     final response = await http.get(url);
-    (json.decode(response.body)['results'] as List).forEach((place) {
+    (json.decode(response.body)['results'] as List).forEach((place) async {
       setState(() {
-    _markers.add(Marker(
-        markerId: MarkerId(place['place_id']),
-        draggable: false,
-        onTap: () => print(place['name']),
-        position: LatLng( place['geometry']['location']['lat'],place['geometry']['location']['lng'])));
-  });
-      // FirebaseFirestore.instance.collection('place-list').add({
-      //   'name': place['name'],
-      //   'latitude': place['geometry']['location']['lat'],
-      //   'longitude': place['geometry']['location']['lng']
-      // });
-      
+        _markers.add(Marker(
+            markerId: MarkerId(place['place_id']),
+            draggable: false,
+            onTap: () => print(place['name']),
+            position: LatLng(place['geometry']['location']['lat'],
+                place['geometry']['location']['lng'])));
+      });
+   
+      // try {
+      //   await FirebaseFirestore.instance
+      //       .collection('users')
+      //       .doc(FirebaseAuth.instance.currentUser?.uid)
+      //       .collection('place-list')
+      //       .doc('')
+      //       .delete();
+      // } catch(e) {
+      //   print(e);
+      // }
+
+      await FirebaseFirestore.instance
+          .collection('users')
+          .doc(FirebaseAuth.instance.currentUser?.uid)
+          .collection('place-list')
+          .add({
+        'name': place['name'],
+        'distance': calculateDistance(
+                currentLocation!.latitude!,
+                currentLocation!.longitude!,
+                place['geometry']['location']['lat'],
+                place['geometry']['location']['lng'])
+            .toStringAsFixed(2),
+        'latitude': place['geometry']['location']['lat'],
+        'longitude': place['geometry']['location']['lng']
+      });
     });
+  }
+
+  double calculateDistance(lat1, lon1, lat2, lon2) {
+    var p = 0.017453292519943295;
+    var a = 0.5 -
+        cos((lat2 - lat1) * p) / 2 +
+        cos(lat1 * p) * cos(lat2 * p) * (1 - cos((lon2 - lon1) * p)) / 2;
+    return 12742 * asin(sqrt(a)) * 1000;
   }
 
   // void addMarker() {setState(() {
@@ -75,14 +107,13 @@ class _MapScreenState extends State<MapScreen> {
   //       onTap: () => print("Marker!"),
   //       position: LatLng( 37.5851446,127.029714)));
   // });
-    
+
   // }
 
   @override
   void initState() {
     super.initState();
     _getCurrentUserLocation();
-   
   }
 
   @override
@@ -119,8 +150,7 @@ class _MapScreenState extends State<MapScreen> {
           _goToTheCurrentLoc;
           getPlaceAddress(
               currentLocation!.latitude!, currentLocation!.longitude!);
-                _sendPlace (
-          currentLocation!.latitude!, currentLocation!.longitude!);
+          _sendPlace(currentLocation!.latitude!, currentLocation!.longitude!);
           // addMarker();
         },
         tooltip: 'refresh',
