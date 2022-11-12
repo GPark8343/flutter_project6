@@ -55,7 +55,7 @@ class _MapScreenState extends State<MapScreen> {
 
   void _sendPlace(double lat, double lng) async {
     final url = Uri.parse(
-        'https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=$lat%2C$lng&radius=50000&type=restaurant&key=AIzaSyA2xDDzNjtYm9Z5KG0EF8wzPLDOY1o3CNE');
+        'https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=$lat%2C$lng&radius=5000&type=bar&key=AIzaSyA2xDDzNjtYm9Z5KG0EF8wzPLDOY1o3CNE');
     final response = await http.get(url);
     (json.decode(response.body)['results'] as List).forEach((place) async {
       if (this.mounted) {

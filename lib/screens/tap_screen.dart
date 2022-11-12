@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 
 import 'package:ifc_project1/screens/chat_list_screen.dart';
 import 'package:ifc_project1/screens/chat_screen.dart';
+import 'package:ifc_project1/screens/filter_screen.dart';
 import 'package:ifc_project1/screens/map_screen.dart';
 import 'package:ifc_project1/screens/restaurant_list_screen.dart';
 
@@ -22,7 +23,8 @@ class _TapScreenState extends State<TapScreen> {
     _pages = [
       {'page': RestaurantListScreen(), 'title': 'List'},
       {'page': MapScreen(), 'title': 'Map'},
-      {'page': ChatListScreen(), 'title': 'Chat'},
+      {'page': ChatScreen(), 'title': 'Chat'},
+      {'page': FilterScreen(), 'title': 'Filter'},
     ];
     super.initState();
   }
@@ -89,6 +91,10 @@ class _TapScreenState extends State<TapScreen> {
                 backgroundColor: Theme.of(context).primaryColor,
                 icon: Icon(Icons.chat),
                 label: 'chat'),
+                BottomNavigationBarItem(
+                backgroundColor: Theme.of(context).primaryColor,
+                icon: Icon(Icons.filter),
+                label: 'filter'),
           ]),
     );
   }
