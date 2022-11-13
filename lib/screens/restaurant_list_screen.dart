@@ -4,36 +4,70 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:ifc_project1/DUMMY_DATA.dart';
+import 'package:ifc_project1/providers/filter.dart';
+import 'package:location/location.dart';
+import 'dart:core';
 
-class RestaurantListScreen extends StatelessWidget {
+import 'package:provider/provider.dart';
 
+calculateDistance(lat1, lon1, lat2, lon2) {
+  var p = 0.017453292519943295;
+  var a = 0.5 -
+      cos((lat2 - lat1) * p) / 2 +
+      cos(lat1 * p) * cos(lat2 * p) * (1 - cos((lon2 - lon1) * p)) / 2;
+  return 12742 * asin(sqrt(a)) * 1000 ;
+}
+
+class RestaurantListScreen extends StatefulWidget {
+  @override
+  State<RestaurantListScreen> createState() => _RestaurantListScreenState();
+}
+
+class _RestaurantListScreenState extends State<RestaurantListScreen> {
+  LocationData? currentLocation;
+
+  Future<void> _getCurrentUserLocation() async {
+    try {
+      final locData = await Location().getLocation();
+      setState(() {
+        currentLocation = locData;
+      });
+    } catch (error) {
+      return;
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
-    return StreamBuilder(
-      stream: FirebaseFirestore.instance
-          .collection('users')
-          .doc(FirebaseAuth.instance.currentUser?.uid)
-          .collection('place-list').orderBy('distance', descending: false)
-          .snapshots(),
-      builder: (ctx, placeSnapshot) {
-        if (placeSnapshot.connectionState == ConnectionState.waiting) {
-          return Center(
-            child: CircularProgressIndicator(),
-          );
-        }
-        final placeDocs = placeSnapshot.data?.docs;
-        return ListView.builder(
-            itemCount: placeDocs?.length,
-            itemBuilder: (context, index) => ListTile(
-                  leading: CircleAvatar(
-                    backgroundColor: Colors.amber,
-                    // backgroundImage: FileImage(File(placeDocs?[index]['image'])),  // 이거 오류 걍 내가 이미지 넣자 어차피 가게별 이미지 존재 X
-                  ),
-                  title: Text(placeDocs?[index]['name']),
-                  subtitle: Text('${placeDocs?[index]['distance']}m'),
-                ));
-      },
-    );
+    return FutureBuilder(
+        future: _getCurrentUserLocation(),
+        builder: (context, snapshot) {
+          final filter = Provider.of<Filter>(context, listen: false);
+          final filteredPlace = filter.PLACE;
+          return ListView.builder(
+                  itemCount: filteredPlace.length,
+                  itemBuilder: (context, index) {
+                    filteredPlace.sort((a, b) =>
+                        (a["distance"] as num).compareTo(b["distance"] as num));
+                    filteredPlace[index]['distance'] = calculateDistance(
+                        (filteredPlace[index]['geometry'] as Map)['location']
+                            ['lat'],
+                        (filteredPlace[index]['geometry'] as Map)['location']
+                            ['lng'],
+                        currentLocation?.latitude ?? 0,
+                        currentLocation?.longitude ?? 0);
+
+                    return ListTile(
+                      leading: CircleAvatar(
+                        backgroundColor: Colors.amber,
+                        // backgroundImage: FileImage(File(placeDocs?[index]['image'])),  // 이거 오류 걍 내가 이미지 넣자 어차피 가게별 이미지 존재 X
+                      ),
+                      title: Text(filteredPlace[index]['name'].toString()),
+                      subtitle: Text(
+                          '${(filteredPlace[index]['distance'] as num).toStringAsFixed(2)}m'),
+                    );
+                  });
+        });
   }
 }

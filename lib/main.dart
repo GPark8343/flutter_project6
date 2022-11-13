@@ -1,3 +1,6 @@
+import 'package:ifc_project1/providers/filter.dart';
+import 'package:provider/provider.dart';
+
 import '../screens/auth_screen.dart';
 import '../screens/tap_screen.dart';
 import '../screens/splash_screen.dart';
@@ -17,33 +20,36 @@ void main() async {
 class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'FlutterChat',
-      theme: ThemeData(
-          primarySwatch: Colors.pink,
-          backgroundColor: Colors.pink,
-          accentColor: Colors.deepPurple,
-          accentColorBrightness: Brightness.dark,
-          buttonTheme: ButtonTheme.of(context).copyWith(
-              buttonColor: Colors.pink,
-              textTheme: ButtonTextTheme.primary,
-              shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(20)))),
-      home: StreamBuilder(
-        stream: FirebaseAuth.instance.authStateChanges(),
-        builder: (ctx, userSnapshot) {
-          if (userSnapshot.connectionState == ConnectionState.waiting) {
-            return SplashScreen();
-          }
-          if (userSnapshot
-              .hasData /*|| FirebaseAuth.instance.currentUser != null*/) {
-            return TapScreen();
-          }
-          return AuthScreen();
+    return ChangeNotifierProvider.value(
+      value: Filter(),
+      child: MaterialApp(
+        title: 'FlutterChat',
+        theme: ThemeData(
+            primarySwatch: Colors.pink,
+            backgroundColor: Colors.pink,
+            accentColor: Colors.deepPurple,
+            accentColorBrightness: Brightness.dark,
+            buttonTheme: ButtonTheme.of(context).copyWith(
+                buttonColor: Colors.pink,
+                textTheme: ButtonTextTheme.primary,
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(20)))),
+        home: StreamBuilder(
+          stream: FirebaseAuth.instance.authStateChanges(),
+          builder: (ctx, userSnapshot) {
+            if (userSnapshot.connectionState == ConnectionState.waiting) {
+              return SplashScreen();
+            }
+            if (userSnapshot
+                .hasData /*|| FirebaseAuth.instance.currentUser != null*/) {
+              return TapScreen();
+            }
+            return AuthScreen();
+          },
+        ),routes: {
+    
         },
-      ),routes: {
-
-      },
+      ),
     );
   }
 }
