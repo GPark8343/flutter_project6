@@ -39,7 +39,7 @@ var DUMMY_PLACES = [
     "name": "스타벅스 고대점",
     "geometry": {
       "location": {"lat": 37.5839163, "lng": 127.029687},
-      "address": "1층"
+      "address": "1층, 2층"
     },
     "distance": 100000,
     "type": "cafe"

@@ -5,7 +5,7 @@ import 'package:ifc_project1/screens/chat_list_screen.dart';
 import 'package:ifc_project1/screens/chat_screen.dart';
 import 'package:ifc_project1/screens/filter_screen.dart';
 import 'package:ifc_project1/screens/map_screen.dart';
-import 'package:ifc_project1/screens/restaurant_list_screen.dart';
+import 'package:ifc_project1/screens/place_list_screen.dart';
 
 class TapScreen extends StatefulWidget {
   const TapScreen({super.key});
@@ -21,7 +21,7 @@ class _TapScreenState extends State<TapScreen> {
   @override
   void initState() {
     _pages = [
-      {'page': RestaurantListScreen(), 'title': 'List'},
+      {'page': PlaceListScreen(), 'title': 'List'},
       {'page': MapScreen(), 'title': 'Map'},
       {'page': ChatScreen(), 'title': 'Chat'},
       {'page': FilterScreen(), 'title': 'Filter'},
