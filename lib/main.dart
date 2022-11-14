@@ -1,5 +1,6 @@
 import 'package:ifc_project1/providers/current_location.dart';
 import 'package:ifc_project1/providers/filter.dart';
+import 'package:ifc_project1/providers/rating.dart';
 import 'package:ifc_project1/screens/place_detail_screen.dart';
 import 'package:provider/provider.dart';
 
@@ -27,7 +28,10 @@ class MyApp extends StatelessWidget {
           ),
           ChangeNotifierProvider.value(
             value: Filter(),
-          )
+          ),
+          ChangeNotifierProvider.value(
+            value: Rating(),
+          ),
         ],
         child: MaterialApp(
           title: 'FlutterChat',

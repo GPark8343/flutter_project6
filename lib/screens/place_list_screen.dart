@@ -1,5 +1,6 @@
 import 'dart:math';
 import 'package:flutter/material.dart';
+import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:ifc_project1/providers/current_location.dart';
 import 'package:ifc_project1/providers/filter.dart';
 import 'package:ifc_project1/screens/place_detail_screen.dart';
@@ -43,20 +44,40 @@ class _PlaceListScreenState extends State<PlaceListScreen> {
                   currentLocation?.longitude ?? 0);
 
               return ListTile(
-                onTap: () {
-                  Navigator.of(context).pushNamed(PlaceDetailScreen.routeName,
-                      arguments: filteredPlace[index]["place_id"]);
-                },
-                leading: CircleAvatar(
-                  backgroundColor: Colors.amber,
-                  backgroundImage: AssetImage(
-                    './assets/images/${filteredPlace[index]['type']}.png',
+                  onTap: () {
+                    Navigator.of(context).pushNamed(PlaceDetailScreen.routeName,
+                        arguments: filteredPlace[index]["place_id"]);
+                  },
+                  leading: CircleAvatar(
+                    backgroundColor: Colors.amber,
+                    backgroundImage: AssetImage(
+                      './assets/images/${filteredPlace[index]['type']}.png',
+                    ),
                   ),
-                ),
-                title: Text(filteredPlace[index]['name'].toString()),
-                subtitle: Text(
-                    '${filteredPlace[index]['distance'] as num > 10000 ? "???m" : (filteredPlace[index]['distance'] as num).toStringAsFixed(0)}m'),
-              );
+                  title: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(filteredPlace[index]['name'].toString()),
+                      RatingBarIndicator(
+                        rating: 2.75,
+                        itemBuilder: (context, index) => Icon(
+                          Icons.star,
+                          color: Colors.amber,
+                        ),
+                        itemCount: 5,
+                        itemSize: 30.0,
+                        direction: Axis.horizontal,
+                      ),
+                    ],
+                  ),
+                  subtitle: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                          '${filteredPlace[index]['distance'] as num > 10000 ? "???m" : (filteredPlace[index]['distance'] as num).toStringAsFixed(0)}m'),
+                      Text('별점 개수')
+                    ],
+                  ));
             });
   }
 }

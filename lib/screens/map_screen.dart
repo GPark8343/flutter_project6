@@ -3,11 +3,10 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'package:ifc_project1/DUMMY_DATA.dart';
+
 import 'package:ifc_project1/providers/current_location.dart';
 import 'package:ifc_project1/providers/filter.dart';
-import 'package:location/location.dart';
-import 'dart:math';
+
 
 import 'package:provider/provider.dart';
 
@@ -31,6 +30,9 @@ class _MapScreenState extends State<MapScreen> {
   void _sendPlace() async {
   if(this.mounted){  final filter = Provider.of<Filter>(context, listen: false);
     final filteredPlace = filter.PLACE;
+    setState(() {
+      
+    });
     (filteredPlace).forEach((place) {
       
         setState(() {

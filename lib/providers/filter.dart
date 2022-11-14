@@ -5,7 +5,7 @@ class Filter with ChangeNotifier {
   var isBar = false;
   var isRestaurant = false;
   var isCafe = false;
-  List PLACE = [];
+  List PLACE = DUMMY_PLACES.where((e) => e["type"] == "restaurant").toList();
 
   void changeBar() {
     PLACE = DUMMY_PLACES.where((e) => e["type"] == "bar").toList();

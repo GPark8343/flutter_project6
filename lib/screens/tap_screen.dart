@@ -1,7 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
-import 'package:ifc_project1/screens/chat_list_screen.dart';
+import 'package:ifc_project1/screens/channel_list_screen.dart';
 import 'package:ifc_project1/screens/chat_screen.dart';
 import 'package:ifc_project1/screens/filter_screen.dart';
 import 'package:ifc_project1/screens/map_screen.dart';

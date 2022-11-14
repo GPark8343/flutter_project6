@@ -13,7 +13,9 @@ var DUMMY_PLACES = [
       "address": "1층"
     },
     "distance": 100,
-    "type": "bar"
+    "type": "bar",
+    "detail": "",
+    "time": "",
   },
   {
     "place_id": "2",
@@ -23,7 +25,9 @@ var DUMMY_PLACES = [
       "address": "지하 1층"
     },
     "distance": 10,
-    "type": "bar"
+    "type": "bar",
+    "detail": "",
+    "time": "",
   },
   {
     "place_id": "3",
@@ -33,8 +37,11 @@ var DUMMY_PLACES = [
       "address": "1층, 2층"
     },
     "distance": 10000,
-    "type": "restaurant"
-  },{
+    "type": "restaurant",
+    "detail": "",
+    "time": "",
+  },
+  {
     "place_id": "4",
     "name": "스타벅스 고대점",
     "geometry": {
@@ -42,6 +49,8 @@ var DUMMY_PLACES = [
       "address": "1층, 2층"
     },
     "distance": 100000,
-    "type": "cafe"
+    "type": "cafe",
+    "detail": "",
+    "time": "",
   },
 ];
