@@ -4,6 +4,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:ifc_project1/DUMMY_DATA.dart';
+import 'package:ifc_project1/providers/current_location.dart';
 import 'package:ifc_project1/providers/filter.dart';
 import 'package:location/location.dart';
 import 'dart:math';
@@ -19,7 +20,7 @@ class MapScreen extends StatefulWidget {
 
 class _MapScreenState extends State<MapScreen> {
   Completer<GoogleMapController> _controller = Completer();
-  LocationData? currentLocation;
+
   List<Marker> _markers = [];
   CollectionReference placeList = FirebaseFirestore.instance
       .collection('users')
@@ -27,38 +28,11 @@ class _MapScreenState extends State<MapScreen> {
       .collection('place-list');
 
 
-
-  Future<void> _getCurrentUserLocation() async {
-    try {
-      final locData = await Location().getLocation();
-      setState(() {
-        currentLocation = locData;
-      });
-    } catch (error) {
-      return;
-    }
-  }
-
-  late CameraPosition _currentLoc = CameraPosition(
-      target: LatLng(currentLocation!.latitude!, currentLocation!.longitude!),
-      zoom: 17);
-
-  Future<void> _goToTheCurrentLoc() async {
-    final GoogleMapController controller = await _controller.future;
-    controller.animateCamera(CameraUpdate.newCameraPosition(_currentLoc));
-  }
-
-  Future<void> getPlaceAddressPrint() async {
-   
-    final filter = Provider.of<Filter>(context, listen: false);
-    print(filter.PLACE);
-  } //https://developers.google.com/maps/documentation/places/web-service/search-nearby 요거 참고['geometry']['location']['lat']
-
   void _sendPlace() async {
-          final filter = Provider.of<Filter>(context, listen: false);
-          final filteredPlace = filter.PLACE;
+  if(this.mounted){  final filter = Provider.of<Filter>(context, listen: false);
+    final filteredPlace = filter.PLACE;
     (filteredPlace).forEach((place) {
-      if (this.mounted) {
+      
         setState(() {
           _markers.add(Marker(
               markerId: MarkerId(place['place_id']),
@@ -67,27 +41,31 @@ class _MapScreenState extends State<MapScreen> {
               position: LatLng(place['geometry']['location']['lat'],
                   place['geometry']['location']['lng'])));
         });
-      }
-    });
-  }
-
-  @override
-  void initState() {
-    super.initState();
-    _getCurrentUserLocation();
+      
+    });}
   }
 
   @override
   Widget build(BuildContext context) {
+    final current = Provider.of<CurrentLocation>(context, listen: false);
+
+    var currentLocation = current.currentLocation;
+
     return Scaffold(
       body: currentLocation == null
           ? Center(
-              child: CircularProgressIndicator(),
+              child: TextButton(
+                  child: Text("find the current location"),
+                  onPressed: () async {
+                    await current.getCurrentUserLocation();
+         
+                    _sendPlace();
+                  }),
             )
           : GoogleMap(
               initialCameraPosition: CameraPosition(
                 target: LatLng(
-                    currentLocation!.latitude!, currentLocation!.longitude!),
+                    currentLocation.latitude!, currentLocation.longitude!),
                 zoom: 17,
               ),
               markers: Set.from(_markers),
@@ -108,8 +86,8 @@ class _MapScreenState extends State<MapScreen> {
             ),
       floatingActionButton: FloatingActionButton(
         onPressed: () async {
-          _goToTheCurrentLoc;
-          await getPlaceAddressPrint();
+          await current.getCurrentUserLocation();
+
           _sendPlace();
           // addMarker();
         },

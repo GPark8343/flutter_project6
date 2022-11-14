@@ -34,5 +34,14 @@ var DUMMY_PLACES = [
     },
     "distance": 10000,
     "type": "restaurant"
+  },{
+    "place_id": "4",
+    "name": "스타벅스 고대점",
+    "geometry": {
+      "location": {"lat": 37.5839163, "lng": 127.029687},
+      "address": "1층"
+    },
+    "distance": 100000,
+    "type": "cafe"
   },
 ];
