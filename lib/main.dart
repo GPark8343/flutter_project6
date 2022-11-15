@@ -1,6 +1,9 @@
 import 'package:ifc_project1/providers/current_location.dart';
 import 'package:ifc_project1/providers/filter.dart';
+import 'package:ifc_project1/providers/is-add.dart';
 import 'package:ifc_project1/providers/rating.dart';
+import 'package:ifc_project1/screens/chat_screen.dart';
+import 'package:ifc_project1/screens/friend_add_screen.dart';
 import 'package:ifc_project1/screens/place_detail_screen.dart';
 import 'package:provider/provider.dart';
 
@@ -12,7 +15,6 @@ import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
 import 'package:flutter/material.dart';
 
-
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
@@ -23,7 +25,8 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MultiProvider(
-        providers: [ ChangeNotifierProvider.value(
+        providers: [
+          ChangeNotifierProvider.value(
             value: CurrentLocation(),
           ),
           ChangeNotifierProvider.value(
@@ -31,6 +34,9 @@ class MyApp extends StatelessWidget {
           ),
           ChangeNotifierProvider.value(
             value: Rating(),
+          ),
+          ChangeNotifierProvider.value(
+            value: IsAdd(),
           ),
         ],
         child: MaterialApp(
@@ -59,7 +65,9 @@ class MyApp extends StatelessWidget {
             },
           ),
           routes: {
-             PlaceDetailScreen.routeName:(ctx) => PlaceDetailScreen(),
+            PlaceDetailScreen.routeName: (ctx) => PlaceDetailScreen(),
+            ChatScreen.routeName: (ctx) => ChatScreen(),
+            FriendAddScreen.routeName: (ctx) => FriendAddScreen(),
           },
         ));
   }
