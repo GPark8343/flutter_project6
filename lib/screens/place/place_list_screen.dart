@@ -1,9 +1,9 @@
 import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
-import 'package:ifc_project1/providers/current_location.dart';
-import 'package:ifc_project1/providers/filter.dart';
-import 'package:ifc_project1/screens/place_detail_screen.dart';
+import 'package:ifc_project1/providers/place/current_location.dart';
+import 'package:ifc_project1/providers/place/filter.dart';
+import 'package:ifc_project1/screens/place/place_detail_screen.dart';
 import 'package:provider/provider.dart';
 
 calculateDistance(lat1, lon1, lat2, lon2) {

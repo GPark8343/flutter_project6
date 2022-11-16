@@ -1,4 +1,3 @@
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
@@ -40,15 +39,16 @@ class _AuthScreenState extends State<AuthScreen> {
 
         await ref.putFile(image!);
 
-final url = await ref.getDownloadURL();
+        final url = await ref.getDownloadURL();
 
         await FirebaseFirestore.instance
             .collection('users')
-            .doc(authResult.user?.uid) 
+            .doc(authResult.user?.uid)
             .set({
           'username': username,
           'email': email,
-          'image_url': url
+          'image_url': url,
+          'uid': authResult.user?.uid
         });
       }
     } on PlatformException catch (error) {

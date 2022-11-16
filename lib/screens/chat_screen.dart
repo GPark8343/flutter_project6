@@ -1,5 +1,3 @@
-
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:ifc_project1/widgets/chat/messages.dart';
@@ -7,14 +5,20 @@ import 'package:ifc_project1/widgets/chat/new_message.dart';
 
 class ChatScreen extends StatelessWidget {
   const ChatScreen({super.key});
- static const routeName = '/chat';
+  static const routeName = '/chat';
   @override
   Widget build(BuildContext context) {
+    final currentUserId =
+        (ModalRoute.of(context)?.settings.arguments as Map)['currentUserId'];
+    final opponentUserId =
+        (ModalRoute.of(context)?.settings.arguments as Map)['opponentUserId'];
+
     return Scaffold(
       appBar: AppBar(
-        title: Text('FlutterChat'),
+        title: const Text('FlutterChat'),
         actions: [
-          DropdownButton(underline:Container(),
+          DropdownButton(
+              underline: Container(),
               icon: Icon(
                 Icons.more_vert,
                 color: Theme.of(context).primaryIconTheme.color,
@@ -28,7 +32,7 @@ class ChatScreen extends StatelessWidget {
                         SizedBox(
                           width: 8,
                         ),
-                        Text('Logout')
+                       const Text('Logout')
                       ],
                     ),
                   ),
@@ -44,7 +48,10 @@ class ChatScreen extends StatelessWidget {
       ),
       body: Container(
         child: Column(
-          children: [Expanded(child: Messages()), NewMessage()],
+          children: [
+            Expanded(child: Messages(currentUserId, opponentUserId)),
+            NewMessage(currentUserId, opponentUserId)
+          ],
         ),
       ),
     );

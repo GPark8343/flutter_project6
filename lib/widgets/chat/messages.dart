@@ -4,11 +4,19 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 class Messages extends StatelessWidget {
+  final String currentUserId;
+  final String opponentsUserId;
+
+  Messages(this.currentUserId, this.opponentsUserId);
   @override
   Widget build(BuildContext context) {
     return StreamBuilder(
       stream: FirebaseFirestore.instance
-          .collection('chat')
+          .collection('users')
+          .doc(currentUserId)
+          .collection('chats')
+          .doc(opponentsUserId)
+          .collection('messages')
           .orderBy('createdAt', descending: true)
           .snapshots(),
       builder: (ctx, chatSnapshot) {
@@ -26,7 +34,7 @@ class Messages extends StatelessWidget {
             FirebaseAuth.instance.currentUser?.uid ==
                 chatDocs?[index]['userId'],
             chatDocs?[index]['username'],
-             chatDocs?[index]['userImage'],
+            chatDocs?[index]['image_url'],
             key: ValueKey(chatDocs?[index].id),
           ),
         );

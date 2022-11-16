@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:ifc_project1/dummy_data.dart';
-import 'package:ifc_project1/providers/filter.dart';
+import 'package:ifc_project1/providers/place/filter.dart';
 import 'package:provider/provider.dart';
 
 class FilterScreen extends StatelessWidget {

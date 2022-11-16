@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:ifc_project1/helper/location_helper.dart';
-import 'package:ifc_project1/providers/filter.dart';
-import 'package:ifc_project1/providers/rating.dart';
+import 'package:ifc_project1/providers/place/filter.dart';
+import 'package:ifc_project1/providers/place/rating.dart';
 import 'package:provider/provider.dart';
 
 class PlaceDetailScreen extends StatefulWidget {

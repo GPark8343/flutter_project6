@@ -3,10 +3,10 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:ifc_project1/providers/add_friend.dart';
 
-import 'package:ifc_project1/providers/current_location.dart';
-import 'package:ifc_project1/providers/filter.dart';
-
+import 'package:ifc_project1/providers/place/current_location.dart';
+import 'package:ifc_project1/providers/place/filter.dart';
 
 import 'package:provider/provider.dart';
 
@@ -26,15 +26,12 @@ class _MapScreenState extends State<MapScreen> {
       .doc(FirebaseAuth.instance.currentUser?.uid)
       .collection('place-list');
 
-
   void _sendPlace() async {
-  if(this.mounted){  final filter = Provider.of<Filter>(context, listen: false);
-    final filteredPlace = filter.PLACE;
-    setState(() {
-      
-    });
-    (filteredPlace).forEach((place) {
-      
+    if (this.mounted) {
+      final filter = Provider.of<Filter>(context, listen: false);
+      final filteredPlace = filter.PLACE;
+      setState(() {});
+      (filteredPlace).forEach((place) {
         setState(() {
           _markers.add(Marker(
               markerId: MarkerId(place['place_id']),
@@ -43,8 +40,8 @@ class _MapScreenState extends State<MapScreen> {
               position: LatLng(place['geometry']['location']['lat'],
                   place['geometry']['location']['lng'])));
         });
-      
-    });}
+      });
+    }
   }
 
   @override
@@ -60,7 +57,7 @@ class _MapScreenState extends State<MapScreen> {
                   child: Text("find the current location"),
                   onPressed: () async {
                     await current.getCurrentUserLocation();
-         
+
                     _sendPlace();
                   }),
             )
@@ -88,10 +85,10 @@ class _MapScreenState extends State<MapScreen> {
             ),
       floatingActionButton: FloatingActionButton(
         onPressed: () async {
+        
           await current.getCurrentUserLocation();
-
+     
           _sendPlace();
-          // addMarker();
         },
         tooltip: 'refresh',
         child: new Icon(Icons.refresh),

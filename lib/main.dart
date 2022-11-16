@@ -1,13 +1,16 @@
-import 'package:ifc_project1/providers/current_location.dart';
-import 'package:ifc_project1/providers/filter.dart';
+import 'package:ifc_project1/providers/add_friend.dart';
+import 'package:ifc_project1/providers/channel_making.dart';
+import 'package:ifc_project1/providers/opponent_user_id.dart';
+import 'package:ifc_project1/providers/place/current_location.dart';
+import 'package:ifc_project1/providers/place/filter.dart';
 import 'package:ifc_project1/providers/is-add.dart';
-import 'package:ifc_project1/providers/rating.dart';
+import 'package:ifc_project1/providers/place/rating.dart';
 import 'package:ifc_project1/screens/chat_screen.dart';
-import 'package:ifc_project1/screens/friend_add_screen.dart';
-import 'package:ifc_project1/screens/place_detail_screen.dart';
+import 'package:ifc_project1/screens/channel_add_screen.dart';
+import 'package:ifc_project1/screens/place/place_detail_screen.dart';
 import 'package:provider/provider.dart';
 
-import '../screens/auth_screen.dart';
+import 'screens/auth/auth_screen.dart';
 import '../screens/tap_screen.dart';
 import '../screens/splash_screen.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -38,6 +41,15 @@ class MyApp extends StatelessWidget {
           ChangeNotifierProvider.value(
             value: IsAdd(),
           ),
+          ChangeNotifierProvider.value(
+            value: AddFriend(),
+          ),
+          ChangeNotifierProvider.value(
+            value: ChannelMaking(),
+          ),
+          ChangeNotifierProvider.value(
+            value: OpponentUserId(),
+          ),
         ],
         child: MaterialApp(
           title: 'FlutterChat',
@@ -67,7 +79,7 @@ class MyApp extends StatelessWidget {
           routes: {
             PlaceDetailScreen.routeName: (ctx) => PlaceDetailScreen(),
             ChatScreen.routeName: (ctx) => ChatScreen(),
-            FriendAddScreen.routeName: (ctx) => FriendAddScreen(),
+            ChannelAddScreen.routeName: (ctx) => ChannelAddScreen(),
           },
         ));
   }

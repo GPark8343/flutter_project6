@@ -3,11 +3,12 @@ import 'package:flutter/material.dart';
 
 import 'package:ifc_project1/screens/channel_list_screen.dart';
 import 'package:ifc_project1/screens/chat_screen.dart';
-import 'package:ifc_project1/screens/filter_screen.dart';
-import 'package:ifc_project1/screens/friend_add_screen.dart';
-import 'package:ifc_project1/screens/map_screen.dart';
-import 'package:ifc_project1/screens/place_list_screen.dart';
+import 'package:ifc_project1/screens/place/filter_screen.dart';
+import 'package:ifc_project1/screens/channel_add_screen.dart';
+import 'package:ifc_project1/screens/place/map_screen.dart';
+import 'package:ifc_project1/screens/place/place_list_screen.dart';
 import 'package:ifc_project1/screens/user_friend_screen.dart';
+import 'package:ifc_project1/screens/user_list_screen.dart';
 
 class TapScreen extends StatefulWidget {
   const TapScreen({super.key});
@@ -23,11 +24,12 @@ class _TapScreenState extends State<TapScreen> {
   @override
   void initState() {
     _pages = [
-      {'page': PlaceListScreen(), 'title': 'List'},
-      {'page': MapScreen(), 'title': 'Map'},
+      // {'page': PlaceListScreen(), 'title': 'List'},
+      // {'page': MapScreen(), 'title': 'Map'},
       {'page': ChannelListScreen(), 'title': 'Chat'},
-      {'page': FilterScreen(), 'title': 'Filter'},
+      // {'page': FilterScreen(), 'title': 'Filter'},
       {'page': UserFreindScreen(), 'title': 'Friend'},
+      {'page': UserListScreen(), 'title': 'People'},
     ];
     super.initState();
   }
@@ -44,10 +46,10 @@ class _TapScreenState extends State<TapScreen> {
       appBar: AppBar(
         title: Text(_pages[_selectedPageIndex]['title'] as String),
         actions: 
-          _selectedPageIndex == 2
+          _selectedPageIndex == 1
               ? [IconButton(
                   onPressed: () {
-                  Navigator.of(context).pushNamed(FriendAddScreen.routeName);
+                  Navigator.of(context).pushNamed(ChannelAddScreen.routeName);
                   },
                   icon: Icon(Icons.add)),DropdownButton(
                   underline: Container(),
@@ -114,26 +116,30 @@ class _TapScreenState extends State<TapScreen> {
           currentIndex: _selectedPageIndex,
           type: BottomNavigationBarType.fixed,
           items: [
-            BottomNavigationBarItem(
-                backgroundColor: Theme.of(context).primaryColor,
-                icon: Icon(Icons.category),
-                label: 'list'),
-            BottomNavigationBarItem(
-                backgroundColor: Theme.of(context).primaryColor,
-                icon: Icon(Icons.map),
-                label: 'map'),
+            // BottomNavigationBarItem(
+            //     backgroundColor: Theme.of(context).primaryColor,
+            //     icon: Icon(Icons.category),
+            //     label: 'list'),
+            // BottomNavigationBarItem(
+            //     backgroundColor: Theme.of(context).primaryColor,
+            //     icon: Icon(Icons.map),
+            //     label: 'map'),
             BottomNavigationBarItem(
                 backgroundColor: Theme.of(context).primaryColor,
                 icon: Icon(Icons.chat),
                 label: 'chat'),
-            BottomNavigationBarItem(
-                backgroundColor: Theme.of(context).primaryColor,
-                icon: Icon(Icons.filter),
-                label: 'filter'),
+            // BottomNavigationBarItem(
+            //     backgroundColor: Theme.of(context).primaryColor,
+            //     icon: Icon(Icons.filter),
+            //     label: 'filter'),
                   BottomNavigationBarItem(
                 backgroundColor: Theme.of(context).primaryColor,
                 icon: Icon(Icons.people),
                 label: 'friend'),
+                BottomNavigationBarItem(
+                backgroundColor: Theme.of(context).primaryColor,
+                icon: Icon(Icons.people_alt_rounded),
+                label: 'people'),
           ]),
     );
   }
