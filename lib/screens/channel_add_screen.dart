@@ -6,17 +6,13 @@ import 'package:ifc_project1/providers/opponent_user_id.dart';
 
 import 'package:ifc_project1/screens/chat_screen.dart';
 import 'package:ifc_project1/widgets/friends/friend-item.dart';
+
 import 'package:provider/provider.dart';
 
-class ChannelAddScreen extends StatefulWidget {
+class ChannelAddScreen extends StatelessWidget {
   static const routeName = '/friend-add';
   const ChannelAddScreen({super.key});
 
-  @override
-  State<ChannelAddScreen> createState() => _ChannelAddScreenState();
-}
-
-class _ChannelAddScreenState extends State<ChannelAddScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -65,41 +61,14 @@ class _ChannelAddScreenState extends State<ChannelAddScreen> {
                   itemBuilder: (context, index) {
                     return Column(
                       children: [
-                        InkWell(
-                          onTap: () {
-                            var opponentUserId = Provider.of<OpponentUserId>(
-                                context,
-                                listen: false);
-                            opponentUserId.changeOpponentUserId(
-                                friendDocs?[index]['uid']);
-                          },
-                          child: Padding(
-                            padding: const EdgeInsets.only(bottom: 8.0),
-                            child: ListTile(
-                                title: Text(
-                                  friendDocs?[index]['username'],
-                                  style: const TextStyle(
-                                    fontSize: 18,
-                                  ),
-                                ),
-                                leading: CircleAvatar(
-                                  backgroundImage: NetworkImage(
-                                    friendDocs?[index]['image_url'],
-                                  ),
-                                  radius: 30,
-                                ),
-                                trailing: Icon(Icons.circle)),
-                          ),
+                        FriendItem(
+                          friendDocs?[index]['username'],
+                          friendDocs?[index]['image_url'],
+                          friendDocs?[index]['uid'],
                         ),
                         const Divider(indent: 85),
                       ],
                     );
-
-                    // FriendItem(
-                    //   friendDocs?[index]['username'],
-                    //   friendDocs?[index]['image_url'],
-                    //   friendDocs?[index]['uid'],
-                    // );
                   }),
             );
           },
