@@ -4,9 +4,10 @@ import 'package:flutter/material.dart';
 
 class NewMessage extends StatefulWidget {
   final String currentUserId;
-  final String opponentsUserId;
+  final List opponentsUserIds;
+  final String groupId;
 
-  NewMessage(this.currentUserId, this.opponentsUserId);
+  NewMessage(this.currentUserId, this.opponentsUserIds, this.groupId);
 
   @override
   State<NewMessage> createState() => _NewMessageState();
@@ -25,23 +26,8 @@ class _NewMessageState extends State<NewMessage> {
         .doc(user?.uid)
         .get();
     FirebaseFirestore.instance
-        .collection('users')
-        .doc(widget.currentUserId)
-        .collection('chats')
-        .doc(widget.opponentsUserId)
-        .collection('messages')
-        .add({
-      'text': _enteredMessage,
-      'createdAt': Timestamp.now(),
-      'userId': user?.uid,
-      'username': userData['username'],
-      'image_url': userData['image_url']
-    });
-    FirebaseFirestore.instance
-        .collection('users')
-        .doc(widget.opponentsUserId)
-        .collection('chats')
-        .doc(widget.currentUserId)
+        .collection('groups')
+        .doc(widget.groupId)
         .collection('messages')
         .add({
       'text': _enteredMessage,
@@ -51,24 +37,20 @@ class _NewMessageState extends State<NewMessage> {
       'image_url': userData['image_url']
     });
 
-    FirebaseFirestore.instance
-        .collection('users')
-        .doc(widget.currentUserId)
-        .collection('chats')
-        .doc(widget.opponentsUserId)
-        .update({
-      'last_message': _enteredMessage,
-      'createdAt': Timestamp.now(),
+    widget.opponentsUserIds.add(widget.currentUserId);
+    final allIds = widget.opponentsUserIds;
+    allIds.forEach((e) {
+      FirebaseFirestore.instance
+          .collection('users')
+          .doc(e)
+          .collection('groupinfo')
+          .doc(widget.groupId)
+          .update({
+        'last_message': _enteredMessage,
+        'createdAt': Timestamp.now(),
+      });
     });
-    FirebaseFirestore.instance
-        .collection('users')
-        .doc(widget.opponentsUserId)
-        .collection('chats')
-        .doc(widget.currentUserId)
-        .update({
-      'last_message': _enteredMessage,
-      'createdAt': Timestamp.now(),
-    });
+
     _controller.clear();
   }
 

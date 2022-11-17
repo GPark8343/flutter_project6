@@ -3,24 +3,49 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 class ChannelMaking with ChangeNotifier {
- 
 
-  Future<void> oneToOneAddChannel(
-      String currentUserId, String opponentsUserId) async {
+  Future<void> addChannel(
+      String currentUserId, List opponentsUserIds, String groupId) async {
+    opponentsUserIds.add(currentUserId);
+    final allIds = opponentsUserIds;
+    List membersInfo = [];
+    allIds.forEach((e) async {
+      final userData =
+          await FirebaseFirestore.instance.collection('users').doc(e).get();
+      membersInfo.add({
+        'memberId': userData['uid'],
+        'membername': userData['username'],
+        'member_image_url': userData['image_url']
+      });
+      await FirebaseFirestore.instance
+          .collection('groups')
+          .doc(groupId)
+          .set({'membersInfo': membersInfo});
+     
+    });
+    allIds.forEach((e) async {
+      await FirebaseFirestore.instance
+          .collection('users')
+          .doc(e)
+          .collection('groupinfo')
+          .doc(groupId)
+          .set({
+        'groupId': groupId,
+        'last_message': '채널 생성 완료',
+        'createdAt': Timestamp.now(),
+        'oppoIds': opponentsUserIds
+      });
+    }); // foreach 끝
+
     final user = FirebaseAuth.instance.currentUser;
+
     final userData = await FirebaseFirestore.instance
         .collection('users')
         .doc(user?.uid)
         .get();
-    final oppoUserData = await FirebaseFirestore.instance
-        .collection('users')
-        .doc(opponentsUserId)
-        .get();
-    await FirebaseFirestore.instance
-        .collection('users')
-        .doc(currentUserId)
-        .collection('chats')
-        .doc(opponentsUserId)
+    await FirebaseFirestore.instance //메시지 생성
+        .collection('groups')
+        .doc(groupId)
         .collection('messages')
         .add({
       'text': '채널 생성 완료',
@@ -28,45 +53,9 @@ class ChannelMaking with ChangeNotifier {
       'userId': user?.uid,
       'username': userData['username'],
       'image_url': userData['image_url']
-    });
-    await FirebaseFirestore.instance
-        .collection('users')
-        .doc(currentUserId)
-        .collection('chats')
-        .doc(opponentsUserId)
-        .set({
-      'oppoId': opponentsUserId,
-      'opponame': oppoUserData['username'],
-      'oppo_image_url': oppoUserData['image_url'],
-      'last_message': '채널 생성 완료', 
-      'createdAt': Timestamp.now(),
     });
 
-    await FirebaseFirestore.instance
-        .collection('users')
-        .doc(opponentsUserId)
-        .collection('chats')
-        .doc(currentUserId)
-        .collection('messages')
-        .add({
-      'text': '채널 생성 완료',
-      'createdAt': Timestamp.now(),
-      'userId': user?.uid,
-      'username': userData['username'],
-      'image_url': userData['image_url']
-    });
-    await FirebaseFirestore.instance
-        .collection('users')
-        .doc(opponentsUserId)
-        .collection('chats')
-        .doc(currentUserId)
-        .set({
-      'oppoId': user?.uid,
-      'opponame': userData['username'],
-      'oppo_image_url': userData['image_url'],
-      'last_message': '채널 생성 완료',
-      'createdAt': Timestamp.now(),
-    });
+  
   }
 
   Future<void> getChannel() async {}

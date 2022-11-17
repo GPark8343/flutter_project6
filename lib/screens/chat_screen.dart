@@ -10,9 +10,10 @@ class ChatScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final currentUserId =
         (ModalRoute.of(context)?.settings.arguments as Map)['currentUserId'];
-    final opponentUserId =
-        (ModalRoute.of(context)?.settings.arguments as Map)['opponentUserId'];
-
+    final opponentUserIds =
+        (ModalRoute.of(context)?.settings.arguments as Map)['opponentUserIds'];
+    final groupId =
+        (ModalRoute.of(context)?.settings.arguments as Map)['groupId'];
     return Scaffold(
       appBar: AppBar(
         title: const Text('FlutterChat'),
@@ -49,8 +50,8 @@ class ChatScreen extends StatelessWidget {
       body: Container(
         child: Column(
           children: [
-            Expanded(child: Messages(currentUserId, opponentUserId)),
-            NewMessage(currentUserId, opponentUserId)
+            Expanded(child: Messages(currentUserId, opponentUserIds,groupId)),
+            NewMessage(currentUserId, opponentUserIds,groupId)
           ],
         ),
       ),

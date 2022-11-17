@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:ifc_project1/providers/opponent_user_id.dart';
+import 'package:ifc_project1/providers/opponent_user_ids.dart';
 import 'package:provider/provider.dart';
 
 class FriendItem extends StatefulWidget {
@@ -18,14 +18,16 @@ class _FriendItemState extends State<FriendItem> {
   var isSelected = false;
   @override
   Widget build(BuildContext context) {
-    var opponentUserId = Provider.of<OpponentUserId>(context, listen: false);
+    var opponentUserIds = Provider.of<OpponentUserIds>(context, listen: false);
     return InkWell(
       onTap: () {
         setState(() {
           isSelected = !isSelected;
         });
         if (isSelected) {
-          opponentUserId.changeOpponentUserId(widget.uid);
+          opponentUserIds.addOpponentUserIds(widget.uid);
+        }else{
+           opponentUserIds.deleteOpponentUserIds(widget.uid);
         }
       },
       child: Padding(
@@ -43,7 +45,7 @@ class _FriendItemState extends State<FriendItem> {
               ),
               radius: 30,
             ),
-            trailing: isSelected ? Icon(Icons.rectangle) : Icon(Icons.circle)),
+            trailing: isSelected ? Icon(Icons.circle,color: Colors.yellow,) : Icon(Icons.circle)),
       ),
     );
   }

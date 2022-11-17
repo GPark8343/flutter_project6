@@ -1,6 +1,6 @@
 import 'package:ifc_project1/providers/add_friend.dart';
 import 'package:ifc_project1/providers/channel_making.dart';
-import 'package:ifc_project1/providers/opponent_user_id.dart';
+import 'package:ifc_project1/providers/opponent_user_ids.dart';
 import 'package:ifc_project1/providers/place/current_location.dart';
 import 'package:ifc_project1/providers/place/filter.dart';
 import 'package:ifc_project1/providers/is-add.dart';
@@ -48,7 +48,7 @@ class MyApp extends StatelessWidget {
             value: ChannelMaking(),
           ),
           ChangeNotifierProvider.value(
-            value: OpponentUserId(),
+            value: OpponentUserIds(),
           ),
         ],
         child: MaterialApp(

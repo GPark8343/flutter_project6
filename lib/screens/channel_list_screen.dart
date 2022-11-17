@@ -14,8 +14,9 @@ class ChannelListScreen extends StatelessWidget {
         child: StreamBuilder(
           stream: FirebaseFirestore.instance
               .collection('users')
-              .doc(FirebaseAuth.instance.currentUser?.uid)
-              .collection('chats')
+              .doc(FirebaseAuth.instance.currentUser
+                  ?.uid) //groupId 찾아서 채널 리스트에 표시 + 여기 누르면 채팅방 볼 수 있게 하기
+              .collection('groupinfo')
               .snapshots(),
           builder: (ctx, channelSnapshot) {
             if (channelSnapshot.connectionState == ConnectionState.waiting) {
@@ -36,14 +37,15 @@ class ChannelListScreen extends StatelessWidget {
                             .pushNamed(ChatScreen.routeName, arguments: {
                           'currentUserId':
                               FirebaseAuth.instance.currentUser?.uid,
-                          'opponentUserId': channelDocs[index]['oppoId']
+                          'opponentUserIds': channelDocs[index]['oppoIds'],
+                          'groupId': channelDocs[index]['groupId']
                         });
                       },
                       child: Padding(
                         padding: const EdgeInsets.only(bottom: 8.0),
                         child: ListTile(
                           title: Text(
-                            channelDocs![index]['opponame'].toString(),
+                            channelDocs![index]['groupId'].toString(),
                             style: const TextStyle(
                               fontSize: 18,
                             ),
@@ -56,9 +58,10 @@ class ChannelListScreen extends StatelessWidget {
                             ),
                           ),
                           leading: CircleAvatar(
-                            backgroundImage: NetworkImage(
-                              channelDocs[index]['oppo_image_url'].toString(),
-                            ),
+                            // backgroundImage: NetworkImage(
+                            //   channelDocs[index][''].toString(),
+                            // ),
+                            backgroundColor: Colors.red,
                             radius: 30,
                           ),
                           trailing: Text(

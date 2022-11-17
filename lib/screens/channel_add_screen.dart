@@ -2,12 +2,13 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:ifc_project1/providers/channel_making.dart';
-import 'package:ifc_project1/providers/opponent_user_id.dart';
+import 'package:ifc_project1/providers/opponent_user_ids.dart';
 
 import 'package:ifc_project1/screens/chat_screen.dart';
 import 'package:ifc_project1/widgets/friends/friend-item.dart';
 
 import 'package:provider/provider.dart';
+import 'package:uuid/uuid.dart';
 
 class ChannelAddScreen extends StatelessWidget {
   static const routeName = '/friend-add';
@@ -23,16 +24,19 @@ class ChannelAddScreen extends StatelessWidget {
               onPressed: () async {
                 final channelMaking =
                     Provider.of<ChannelMaking>(context, listen: false);
-                var opponentUserId =
-                    Provider.of<OpponentUserId>(context, listen: false)
-                        .opponentUserId;
-                await channelMaking.oneToOneAddChannel(
+                var opponentUserIds =
+                    Provider.of<OpponentUserIds>(context, listen: false)
+                        .opponentUserIds;
+                final groupId = Uuid().v1();
+                await channelMaking.addChannel(
                     (FirebaseAuth.instance.currentUser?.uid).toString(),
-                    opponentUserId); //
+                    opponentUserIds,
+                    groupId); //
                 await Navigator.of(context)
                     .pushNamed(ChatScreen.routeName, arguments: {
                   'currentUserId': FirebaseAuth.instance.currentUser?.uid,
-                  'opponentUserId': opponentUserId //
+                  'opponentUserIds': opponentUserIds,
+                  'groupId': groupId
                 });
               },
             )

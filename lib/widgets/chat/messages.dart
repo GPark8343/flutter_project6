@@ -5,17 +5,16 @@ import 'package:flutter/material.dart';
 
 class Messages extends StatelessWidget {
   final String currentUserId;
-  final String opponentsUserId;
+  final List opponentsUserIds;
+  final String groupId;
 
-  Messages(this.currentUserId, this.opponentsUserId);
+  Messages(this.currentUserId, this.opponentsUserIds, this.groupId);
   @override
   Widget build(BuildContext context) {
     return StreamBuilder(
       stream: FirebaseFirestore.instance
-          .collection('users')
-          .doc(currentUserId)
-          .collection('chats')
-          .doc(opponentsUserId)
+          .collection('groups')
+          .doc(groupId)
           .collection('messages')
           .orderBy('createdAt', descending: true)
           .snapshots(),

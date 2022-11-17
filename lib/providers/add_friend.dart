@@ -12,6 +12,6 @@ class AddFriend with ChangeNotifier {
         .collection('friends')
         .add({'username': name, 'image_url': userImage, 'uid': uid});}
    
-    notifyListeners();
+
   }
 
