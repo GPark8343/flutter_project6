@@ -23,7 +23,6 @@ class ChannelMaking with ChangeNotifier {
         'last_message': '채널 생성 완료',
         'createdAt': Timestamp.now(),
         'allIds': allIds,
-        ' oppoIds': opponentsUserIds
       });
     });
 

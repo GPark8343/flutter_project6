@@ -5,10 +5,10 @@ import 'package:flutter/material.dart';
 
 class Messages extends StatelessWidget {
   final String currentUserId;
-  final List opponentsUserIds;
+
   final String groupId;
 
-  Messages(this.currentUserId, this.opponentsUserIds, this.groupId);
+  Messages(this.currentUserId,  this.groupId);
   @override
   Widget build(BuildContext context) {
     return StreamBuilder(

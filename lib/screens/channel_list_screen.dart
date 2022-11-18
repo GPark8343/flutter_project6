@@ -35,7 +35,7 @@ class ChannelListScreen extends StatelessWidget {
                             .pushNamed(ChatScreen.routeName, arguments: {
                           'currentUserId':
                               FirebaseAuth.instance.currentUser?.uid,
-                          'opponentUserIds': channelDocs[index]['oppoIds'],
+                   
                           'groupId': channelDocs[index]['groupId']
                         });
                       },

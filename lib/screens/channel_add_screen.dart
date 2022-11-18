@@ -70,11 +70,11 @@ class _ChannelAddScreenState extends State<ChannelAddScreen> {
                   if (!result || opponentUserIds.isEmpty) {
                     setState(() {});
                     //나 혼자서 대화하기 아님 이미 있는 채팅방 또 생성X
-                    print(opponentUserIds);
-                    print(data.docs[0].data());
+                    // print(opponentUserIds);
+                    // print(data.docs[0].data());
                   } else {
-                    print(opponentUserIds);
-                    print(result);
+                    // print(opponentUserIds);
+                    // print(result);
                     final groupId = Uuid().v1();
 
                     await channelMaking.addChannel(

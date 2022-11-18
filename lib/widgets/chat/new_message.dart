@@ -4,10 +4,10 @@ import 'package:flutter/material.dart';
 
 class NewMessage extends StatefulWidget {
   final String currentUserId;
-  final List opponentsUserIds;
+
   final String groupId;
 
-  NewMessage(this.currentUserId, this.opponentsUserIds, this.groupId);
+  NewMessage(this.currentUserId, this.groupId);
 
   @override
   State<NewMessage> createState() => _NewMessageState();
@@ -19,6 +19,7 @@ class _NewMessageState extends State<NewMessage> {
 
   void _sendMessage() async {
     FocusScope.of(context).unfocus();
+        _controller.clear();
     final user =
         FirebaseAuth.instance.currentUser; // 지금은 currentuser가 Future이 아님
     final userData = await FirebaseFirestore.instance
@@ -37,18 +38,7 @@ class _NewMessageState extends State<NewMessage> {
       'image_url': userData['image_url']
     });
 
-    widget.opponentsUserIds.add(widget.currentUserId);
-    final allIds = widget.opponentsUserIds;
-    allIds.forEach((e) async {
-      // FirebaseFirestore.instance
-      //     .collection('users')
-      //     .doc(e)
-      //     .collection('groupinfo')
-      //     .doc(widget.groupId)
-      //     .update({
-      //   'last_message': _enteredMessage,
-      //   'createdAt': Timestamp.now(),
-      // });
+  
       await FirebaseFirestore.instance
           .collection('groups')
           .doc(widget.groupId)
@@ -56,9 +46,9 @@ class _NewMessageState extends State<NewMessage> {
         'last_message': _enteredMessage,
         'createdAt': Timestamp.now(),
       });
-    });
 
-    _controller.clear();
+
+
   }
 
   @override

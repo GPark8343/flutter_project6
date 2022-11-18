@@ -12,8 +12,7 @@ class ChatScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final currentUserId =
         (ModalRoute.of(context)?.settings.arguments as Map)['currentUserId'];
-    final opponentUserIds =
-        (ModalRoute.of(context)?.settings.arguments as Map)['opponentUserIds'];
+  
     final groupId =
         (ModalRoute.of(context)?.settings.arguments as Map)['groupId'];
     return Scaffold(
@@ -53,37 +52,37 @@ class ChatScreen extends StatelessWidget {
       body: Container(
         child: Column(
           children: [
-            Expanded(child: Messages(currentUserId, opponentUserIds, groupId)),
-            NewMessage(currentUserId, opponentUserIds, groupId),
-            IconButton(
-                onPressed: () async {
-                  var data = await FirebaseFirestore.instance
-                      .collection("users")
-                      .doc(FirebaseAuth.instance.currentUser?.uid)
-                      .collection('groupinfo')
-                      .where("oppoIds", isEqualTo: [
-                        'QTh5zmfZUiaNv9OxywSSPBvVMTy1',
-                      ])
-                      .snapshots()
-                      .first;
-                  var isData = await FirebaseFirestore.instance
-                      .collection("users")
-                      .doc(FirebaseAuth.instance.currentUser?.uid)
-                      .collection('groupinfo')
-                      .where("oppoIds", isEqualTo: [
-                        'QTh5zmfZUiaNv9OxywSSPBvVMTy1',
-                      ])
-                      .snapshots()
-                      .isEmpty;
-if(isData){
- var result = data.docs[0].data()["oppoIds"];
-                  print(result);
-}else{
-   print('읎다');
-}
+            Expanded(child: Messages(currentUserId,  groupId)),
+            NewMessage(currentUserId, groupId),
+//             IconButton(
+//                 onPressed: () async {
+//                   var data = await FirebaseFirestore.instance
+//                       .collection("users")
+//                       .doc(FirebaseAuth.instance.currentUser?.uid)
+//                       .collection('groupinfo')
+//                       .where("oppoIds", isEqualTo: [
+//                         'QTh5zmfZUiaNv9OxywSSPBvVMTy1',
+//                       ])
+//                       .snapshots()
+//                       .first;
+//                   var isData = await FirebaseFirestore.instance
+//                       .collection("users")
+//                       .doc(FirebaseAuth.instance.currentUser?.uid)
+//                       .collection('groupinfo')
+//                       .where("oppoIds", isEqualTo: [
+//                         'QTh5zmfZUiaNv9OxywSSPBvVMTy1',
+//                       ])
+//                       .snapshots()
+//                       .isEmpty;
+// if(isData){
+//  var result = data.docs[0].data()["oppoIds"];
+//                   print(result);
+// }else{
+//    print('읎다');
+// }
                  
-                },
-                icon: Icon(Icons.abc))
+//                 },
+//                 icon: Icon(Icons.abc))
           ],
         ),
       ),
