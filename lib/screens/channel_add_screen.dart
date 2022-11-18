@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -5,17 +7,32 @@ import 'package:ifc_project1/providers/channel_making.dart';
 import 'package:ifc_project1/providers/opponent_user_ids.dart';
 
 import 'package:ifc_project1/screens/chat_screen.dart';
+import 'package:ifc_project1/screens/splash_screen.dart';
 import 'package:ifc_project1/widgets/friends/friend-item.dart';
 
 import 'package:provider/provider.dart';
 import 'package:uuid/uuid.dart';
 
-class ChannelAddScreen extends StatelessWidget {
+class ChannelAddScreen extends StatefulWidget {
   static const routeName = '/friend-add';
   const ChannelAddScreen({super.key});
 
   @override
+  State<ChannelAddScreen> createState() => _ChannelAddScreenState();
+}
+
+class _ChannelAddScreenState extends State<ChannelAddScreen> {
+  @override
   Widget build(BuildContext context) {
+    void goto(opponentUserIds, groupId) {
+      Navigator.of(context)
+          .pushReplacementNamed(ChatScreen.routeName, arguments: {
+        'currentUserId': FirebaseAuth.instance.currentUser?.uid,
+        'opponentUserIds': opponentUserIds,
+        'groupId': groupId
+      });
+    }
+
     return Scaffold(
         appBar: AppBar(
           actions: [
@@ -37,31 +54,36 @@ class ChannelAddScreen extends StatelessWidget {
                   //     .where("oppoIds", isEqualTo: opponentUserIds)
                   //     .snapshots()
                   //     .first;
-                  // var isData = await FirebaseFirestore.instance
-                  //     .collection("users")
-                  //     .doc(FirebaseAuth.instance.currentUser?.uid)
-                  //     .collection('groupinfo')
-                  //     .where("oppoIds", isEqualTo: opponentUserIds)
-                  //     .snapshots()
-                  //     .isEmpty;
-                  // if (opponentUserIds ==
-                  //     [FirebaseAuth.instance.currentUser?.uid]) {
-                  //   return null;
-                  // } else if (!isData) {
-                  //   return null;
-                  // } else {
-                  final groupId = Uuid().v1();
-                  await channelMaking.addChannel(
-                      (FirebaseAuth.instance.currentUser?.uid).toString(),
-                      opponentUserIds,
-                      groupId); //
+                  var allIds = [
+                    FirebaseAuth.instance.currentUser?.uid,
+                    ...opponentUserIds
+                  ];
+                  allIds.sort();
+                  var data = await FirebaseFirestore.instance
+                      .collection("groups")
+                      .where("allIds", isEqualTo: allIds)
+                      .snapshots()
+                      .first;
+                  var result = data.docs.isEmpty;
+                  // [0].data()["allIds"];
 
-                  await Navigator.of(context)
-                      .pushReplacementNamed(ChatScreen.routeName, arguments: {
-                    'currentUserId': FirebaseAuth.instance.currentUser?.uid,
-                    'opponentUserIds': opponentUserIds,
-                    'groupId': groupId
-                  });
+                  if (!result || opponentUserIds.isEmpty) {
+                    setState(() {});
+                    //나 혼자서 대화하기 아님 이미 있는 채팅방 또 생성X
+                    print(opponentUserIds);
+                    print(data.docs[0].data());
+                  } else {
+                    print(opponentUserIds);
+                    print(result);
+                    final groupId = Uuid().v1();
+
+                    await channelMaking.addChannel(
+                        (FirebaseAuth.instance.currentUser?.uid).toString(),
+                        opponentUserIds,
+                        groupId); //
+
+                    goto(opponentUserIds, groupId);
+                  }
                   opponentUserIdsTool.clearOpponentUserIds();
                 }
                 // },

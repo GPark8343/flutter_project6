@@ -36,7 +36,7 @@ class MyProfile extends StatelessWidget {
                             padding: const EdgeInsets.only(bottom: 8.0),
                             child: ListTile(
                               title: Text(
-                                userDocs?[index]['username'],
+                                userDocs?[index]['username'] ,
                                 style: const TextStyle(
                                   fontSize: 18,
                                 ),

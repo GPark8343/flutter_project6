@@ -80,6 +80,7 @@ class MyApp extends StatelessWidget {
             PlaceDetailScreen.routeName: (ctx) => PlaceDetailScreen(),
             ChatScreen.routeName: (ctx) => ChatScreen(),
             ChannelAddScreen.routeName: (ctx) => ChannelAddScreen(),
+            SplashScreen.routeName: (ctx) => SplashScreen(),
           },
         ));
   }
