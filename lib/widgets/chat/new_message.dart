@@ -39,11 +39,18 @@ class _NewMessageState extends State<NewMessage> {
 
     widget.opponentsUserIds.add(widget.currentUserId);
     final allIds = widget.opponentsUserIds;
-    allIds.forEach((e) {
-      FirebaseFirestore.instance
-          .collection('users')
-          .doc(e)
-          .collection('groupinfo')
+    allIds.forEach((e) async {
+      // FirebaseFirestore.instance
+      //     .collection('users')
+      //     .doc(e)
+      //     .collection('groupinfo')
+      //     .doc(widget.groupId)
+      //     .update({
+      //   'last_message': _enteredMessage,
+      //   'createdAt': Timestamp.now(),
+      // });
+      await FirebaseFirestore.instance
+          .collection('groups')
           .doc(widget.groupId)
           .update({
         'last_message': _enteredMessage,

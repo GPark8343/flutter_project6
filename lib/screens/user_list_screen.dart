@@ -21,32 +21,34 @@ class UserListScreen extends StatelessWidget {
         final userDocs = userSnapshot.data?.docs;
         return ListView.builder(
             itemCount: userDocs?.length,
-            itemBuilder: (context, index) => Column(
-                  children: [
-                    InkWell(
-                      onTap: () {
-                        final addFriend =
-                            Provider.of<AddFriend>(context, listen: false);
-                        addFriend.addFriend(
-                            userDocs[index]["username"],
-                            userDocs[index]["image_url"],
-                            userDocs[index]["uid"]);
-                      },
-                      child: Padding(
-                        padding: const EdgeInsets.only(bottom: 8.0),
-                        child: ListTile(
-                          title: Text(
-                            userDocs![index]['username'],
-                            style: const TextStyle(
-                              fontSize: 18,
-                            ),
+            itemBuilder: (context, index) {
+              return Column(
+                children: [
+                  InkWell(
+                    onTap: () {
+                      final addFriend = //친추 기능
+                          Provider.of<AddFriend>(context, listen: false);
+                      addFriend.addFriend(
+                          userDocs?[index]["username"],
+                          userDocs?[index]["image_url"],
+                          userDocs?[index]["uid"]);
+                    },
+                    child: Padding(
+                      padding: const EdgeInsets.only(bottom: 8.0),
+                      child: ListTile(
+                        title: Text(
+                          userDocs?[index]['username'],
+                          style: const TextStyle(
+                            fontSize: 18,
                           ),
                         ),
                       ),
                     ),
-                    const Divider(indent: 85),
-                  ],
-                ));
+                  ),
+                  const Divider(indent: 85),
+                ],
+              );
+            });
       },
     );
   }

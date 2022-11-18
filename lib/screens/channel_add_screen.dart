@@ -20,26 +20,52 @@ class ChannelAddScreen extends StatelessWidget {
         appBar: AppBar(
           actions: [
             IconButton(
-              icon: Icon(Icons.check),
-              onPressed: () async {
-                final channelMaking =
-                    Provider.of<ChannelMaking>(context, listen: false);
-                var opponentUserIds =
-                    Provider.of<OpponentUserIds>(context, listen: false)
-                        .opponentUserIds;
-                final groupId = Uuid().v1();
-                await channelMaking.addChannel(
-                    (FirebaseAuth.instance.currentUser?.uid).toString(),
-                    opponentUserIds,
-                    groupId); //
-                await Navigator.of(context)
-                    .pushNamed(ChatScreen.routeName, arguments: {
-                  'currentUserId': FirebaseAuth.instance.currentUser?.uid,
-                  'opponentUserIds': opponentUserIds,
-                  'groupId': groupId
-                });
-              },
-            )
+                icon: Icon(Icons.check),
+                onPressed: () async {
+                  final channelMaking =
+                      Provider.of<ChannelMaking>(context, listen: false);
+                  var opponentUserIdsTool =
+                      Provider.of<OpponentUserIds>(context, listen: false);
+                  var opponentUserIds =
+                      Provider.of<OpponentUserIds>(context, listen: false)
+                          .opponentUserIds;
+
+                  // var data = await FirebaseFirestore.instance
+                  //     .collection("users")
+                  //     .doc(FirebaseAuth.instance.currentUser?.uid)
+                  //     .collection('groupinfo')
+                  //     .where("oppoIds", isEqualTo: opponentUserIds)
+                  //     .snapshots()
+                  //     .first;
+                  // var isData = await FirebaseFirestore.instance
+                  //     .collection("users")
+                  //     .doc(FirebaseAuth.instance.currentUser?.uid)
+                  //     .collection('groupinfo')
+                  //     .where("oppoIds", isEqualTo: opponentUserIds)
+                  //     .snapshots()
+                  //     .isEmpty;
+                  // if (opponentUserIds ==
+                  //     [FirebaseAuth.instance.currentUser?.uid]) {
+                  //   return null;
+                  // } else if (!isData) {
+                  //   return null;
+                  // } else {
+                  final groupId = Uuid().v1();
+                  await channelMaking.addChannel(
+                      (FirebaseAuth.instance.currentUser?.uid).toString(),
+                      opponentUserIds,
+                      groupId); //
+
+                  await Navigator.of(context)
+                      .pushReplacementNamed(ChatScreen.routeName, arguments: {
+                    'currentUserId': FirebaseAuth.instance.currentUser?.uid,
+                    'opponentUserIds': opponentUserIds,
+                    'groupId': groupId
+                  });
+                  opponentUserIdsTool.clearOpponentUserIds();
+                }
+                // },
+                )
           ],
           title: const Text('add your members'),
         ),

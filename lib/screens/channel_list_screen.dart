@@ -13,10 +13,8 @@ class ChannelListScreen extends StatelessWidget {
         padding: const EdgeInsets.only(top: 10.0),
         child: StreamBuilder(
           stream: FirebaseFirestore.instance
-              .collection('users')
-              .doc(FirebaseAuth.instance.currentUser
-                  ?.uid) //groupId 찾아서 채널 리스트에 표시 + 여기 누르면 채팅방 볼 수 있게 하기
-              .collection('groupinfo')
+              .collection('groups')
+              
               .snapshots(),
           builder: (ctx, channelSnapshot) {
             if (channelSnapshot.connectionState == ConnectionState.waiting) {

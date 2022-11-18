@@ -3,11 +3,14 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 class ChannelMaking with ChangeNotifier {
+  // Future<void> connectChannel(){
 
+  // }
   Future<void> addChannel(
       String currentUserId, List opponentsUserIds, String groupId) async {
-    opponentsUserIds.add(currentUserId);
-    final allIds = opponentsUserIds;
+    var allIds = opponentsUserIds;
+    allIds.add(currentUserId);
+
     List membersInfo = [];
     allIds.forEach((e) async {
       final userData =
@@ -17,12 +20,15 @@ class ChannelMaking with ChangeNotifier {
         'membername': userData['username'],
         'member_image_url': userData['image_url']
       });
-      await FirebaseFirestore.instance
-          .collection('groups')
-          .doc(groupId)
-          .set({'membersInfo': membersInfo});
-     
+      await FirebaseFirestore.instance.collection('groups').doc(groupId).set({
+      'membersInfo': membersInfo,
+      'groupId': groupId,
+      'last_message': '채널 생성 완료',
+      'createdAt': Timestamp.now(),
+      'oppoIds': opponentsUserIds
     });
+    });
+    
     allIds.forEach((e) async {
       await FirebaseFirestore.instance
           .collection('users')
@@ -54,8 +60,6 @@ class ChannelMaking with ChangeNotifier {
       'username': userData['username'],
       'image_url': userData['image_url']
     });
-
-  
   }
 
   Future<void> getChannel() async {}

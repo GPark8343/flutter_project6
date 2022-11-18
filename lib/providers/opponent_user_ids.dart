@@ -5,14 +5,17 @@ class OpponentUserIds with ChangeNotifier {
 
   void addOpponentUserIds(uid) {
     opponentUserIds.add(uid);
+
     notifyListeners();
   }
-  void clearOpponentUserIds(uid) {
+  void clearOpponentUserIds() {
     opponentUserIds.clear();
+   
     notifyListeners();
   }
    void deleteOpponentUserIds(uid) {
     opponentUserIds.remove(uid);
+ 
     notifyListeners();
   }
 }
