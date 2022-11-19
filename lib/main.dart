@@ -1,13 +1,18 @@
-import 'package:ifc_project1/providers/add_friend.dart';
-import 'package:ifc_project1/providers/channel_making.dart';
-import 'package:ifc_project1/providers/all_ids.dart';
+import 'package:ifc_project1/providers/chat/add_friend.dart';
+import 'package:ifc_project1/providers/chat/all_ids.dart';
+import 'package:ifc_project1/providers/chat/channel_making.dart';
+import 'package:ifc_project1/providers/chat/is-add.dart';
+import 'package:ifc_project1/providers/chat/waiting_channel_making.dart';
 import 'package:ifc_project1/providers/place/current_location.dart';
 import 'package:ifc_project1/providers/place/filter.dart';
-import 'package:ifc_project1/providers/is-add.dart';
+
 import 'package:ifc_project1/providers/place/rating.dart';
-import 'package:ifc_project1/screens/chat_screen.dart';
-import 'package:ifc_project1/screens/channel_add_screen.dart';
+import 'package:ifc_project1/screens/chat/channel_add_screen.dart';
+import 'package:ifc_project1/screens/chat/chat_screen.dart';
+
 import 'package:ifc_project1/screens/place/place_detail_screen.dart';
+import 'package:ifc_project1/screens/room/room_add_screen.dart';
+import 'package:ifc_project1/screens/room/waiting_room_screen.dart';
 import 'package:provider/provider.dart';
 
 import 'screens/auth/auth_screen.dart';
@@ -50,6 +55,9 @@ class MyApp extends StatelessWidget {
           ChangeNotifierProvider.value(
             value: AllIds(),
           ),
+          ChangeNotifierProvider.value(
+            value: WaitingChannelMaking(),
+          ),
         ],
         child: MaterialApp(
           title: 'FlutterChat',
@@ -81,6 +89,8 @@ class MyApp extends StatelessWidget {
             ChatScreen.routeName: (ctx) => ChatScreen(),
             ChannelAddScreen.routeName: (ctx) => ChannelAddScreen(),
             SplashScreen.routeName: (ctx) => SplashScreen(),
+            WaitingRoomScreen.routeName: (ctx) => WaitingRoomScreen(),
+            RoomAddScreen.routeName: (ctx) => RoomAddScreen(),
           },
         ));
   }

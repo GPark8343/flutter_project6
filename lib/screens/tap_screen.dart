@@ -1,10 +1,12 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:ifc_project1/screens/bulletin_board_screen.dart';
-import 'package:ifc_project1/screens/channel_list_screen.dart';
-import  'package:ifc_project1/screens/channel_add_screen.dart';
-import 'package:ifc_project1/screens/user_friend_screen.dart';
-import 'package:ifc_project1/screens/user_list_screen.dart';
+import 'package:ifc_project1/screens/chat/channel_add_screen.dart';
+import 'package:ifc_project1/screens/chat/channel_list_screen.dart';
+import 'package:ifc_project1/screens/chat/user_friend_screen.dart';
+import 'package:ifc_project1/screens/chat/user_list_screen.dart';
+import 'package:ifc_project1/screens/room/bulletin_board_screen.dart';
+import 'package:ifc_project1/screens/room/room_add_screen.dart';
+
 
 class TapScreen extends StatefulWidget {
   const TapScreen({super.key});
@@ -113,7 +115,7 @@ class _TapScreenState extends State<TapScreen> {
                     ? [IconButton(
                     onPressed: () {
                       Navigator.of(context)
-                          .pushNamed(ChannelAddScreen.routeName);
+                          .pushNamed(RoomAddScreen.routeName);
                     },icon: Icon(Icons.edit),)]
                     : [],
       ),

@@ -1,10 +1,11 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:ifc_project1/providers/channel_making.dart';
-import 'package:ifc_project1/providers/all_ids.dart';
+import 'package:ifc_project1/providers/chat/all_ids.dart';
+import 'package:ifc_project1/providers/chat/channel_making.dart';
 
-import 'package:ifc_project1/screens/chat_screen.dart';
+import 'package:ifc_project1/screens/chat/chat_screen.dart';
+
 import 'package:ifc_project1/screens/splash_screen.dart';
 
 import 'package:ifc_project1/widgets/friends/friend-item.dart';
@@ -20,7 +21,7 @@ class ChannelAddScreen extends StatefulWidget {
   State<ChannelAddScreen> createState() => _ChannelAddScreenState();
 }
 
-var isLoading = false;
+
 
 class _ChannelAddScreenState extends State<ChannelAddScreen> {
   var isLoading = false;
@@ -76,7 +77,7 @@ class _ChannelAddScreenState extends State<ChannelAddScreen> {
                         if (!result || opponentUserIds.isEmpty) {
                           setState(() {});
                           //나 혼자서 대화하기 아님 이미 있는 채팅방 또 생성X
-
+                      
                         } else {
                           print(opponentUserIds);
                           print(result);

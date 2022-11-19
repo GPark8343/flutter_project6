@@ -2,7 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:ifc_project1/info.dart';
-import 'package:ifc_project1/providers/add_friend.dart';
+
 import 'package:provider/provider.dart';
 
 class UserListScreen extends StatelessWidget {

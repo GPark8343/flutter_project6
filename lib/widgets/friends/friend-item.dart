@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:ifc_project1/providers/all_ids.dart';
+
+import 'package:ifc_project1/providers/chat/all_ids.dart';
 import 'package:provider/provider.dart';
 
 class FriendItem extends StatefulWidget {

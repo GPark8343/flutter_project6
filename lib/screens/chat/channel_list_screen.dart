@@ -1,7 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:ifc_project1/screens/chat_screen.dart';
+import 'package:ifc_project1/screens/chat/chat_screen.dart';
+
 import 'package:intl/intl.dart';
 
 class ChannelListScreen extends StatelessWidget {
