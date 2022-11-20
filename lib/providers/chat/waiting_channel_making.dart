@@ -3,8 +3,8 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 class WaitingChannelMaking with ChangeNotifier {
-  Future<void> waitingAddChannel(
-      String currentUserId, List opponentsUserIds, String groupId, int membersNum, String title) async {
+  Future<void> waitingAddChannel(String currentUserId, List opponentsUserIds,
+      String groupId, int membersNum, String title, String description) async {
     opponentsUserIds.sort();
     List membersInfo = [];
     final allIds = [currentUserId, ...opponentsUserIds];
@@ -17,13 +17,17 @@ class WaitingChannelMaking with ChangeNotifier {
         'membername': userData['username'],
         'member_image_url': userData['image_url']
       });
-      await FirebaseFirestore.instance.collection('waiting-groups').doc(groupId).set({
+      await FirebaseFirestore.instance
+          .collection('waiting-groups')
+          .doc(groupId)
+          .set({
         'membersInfo': membersInfo,
         'groupId': groupId,
         'createdAt': Timestamp.now(),
         'allIds': allIds,
-        'membersNum':  membersNum,
-        'title': title
+        'membersNum': membersNum,
+        'title': title,
+        'description': description
       });
     });
 
@@ -48,5 +52,37 @@ class WaitingChannelMaking with ChangeNotifier {
     });
   }
 
- 
+  Future<void> joinChannel(groupId) async {
+    final currentUser = await FirebaseFirestore.instance
+        .collection('users')
+        .doc(FirebaseAuth.instance.currentUser?.uid)
+        .get();
+    var membersInfo = await FirebaseFirestore.instance
+        .collection('waiting-groups')
+        .doc(groupId)
+        .get();
+
+    var list = [
+      ...membersInfo['membersInfo'],
+      {
+        'memberId': currentUser['uid'],
+        'membername': currentUser['username'],
+        'member_image_url': currentUser['image_url']
+      },
+    ];
+
+    // (membersInfo['membersInfo'] as List).add({
+    //   'memberId': currentUser['uid'],
+    //   'membername': currentUser['username'],
+    //   'member_image_url': currentUser['image_url']
+    // });
+
+    await FirebaseFirestore.instance
+        .collection('waiting-groups')
+        .doc(groupId)
+        .update({'membersInfo': list});
+  }
+
+
+
 }

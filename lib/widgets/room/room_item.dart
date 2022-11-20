@@ -54,7 +54,7 @@ class RoomItem extends StatelessWidget {
                           subtitle: Padding(
                             padding: const EdgeInsets.only(top: 6.0),
                             child: Text(
-                            '간략한 설명',
+                             channelDocs[index]['description'],
                               style: const TextStyle(fontSize: 15),
                             ),
                           ),

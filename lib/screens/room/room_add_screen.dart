@@ -22,7 +22,7 @@ class _RoomAddScreenState extends State<RoomAddScreen> {
   var isLoading = false;
 
   final _formKey = GlobalKey<FormState>();
-
+  var _description = '';
   var _membersNum;
   var _title = '';
 
@@ -35,7 +35,7 @@ class _RoomAddScreenState extends State<RoomAddScreen> {
         [],
         groupId,
         int.parse(_membersNum),
-        _title);
+        _title,_description);
   }
 
   void goto(String groupId, BuildContext context) {
@@ -134,6 +134,24 @@ class _RoomAddScreenState extends State<RoomAddScreen> {
                             _title = value as String;
                           },
                         ),
+                        TextFormField(
+                          keyboardType: TextInputType.multiline,
+                          maxLines: 3,
+                          key: ValueKey('description'),
+                          validator: (value) {
+                            if (value!.isEmpty) {
+                              return 'Please enter a description.';
+                            }
+                            if (value.length < 10) {
+                              return 'Should be  at least 10 characters long.';
+                            }
+                            return null;
+                          },
+                          decoration: InputDecoration(labelText: 'Description'),
+                          onSaved: (value) {
+                            _description = value as String;
+                          },
+                        )
                       ],
                     )),
               ),
