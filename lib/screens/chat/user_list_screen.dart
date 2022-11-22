@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:ifc_project1/info.dart';
+import 'package:ifc_project1/providers/chat/add_friend.dart';
 
 import 'package:provider/provider.dart';
 
@@ -26,12 +27,12 @@ class UserListScreen extends StatelessWidget {
                 children: [
                   InkWell(
                     onTap: () {
-                      // final addFriend = //친추 기능
-                      //     Provider.of<AddFriend>(context, listen: false);
-                      // addFriend.addFriend(
-                      //     userDocs?[index]["username"],
-                      //     userDocs?[index]["image_url"],
-                      //     userDocs?[index]["uid"]);
+                      final addFriend = //친추 기능
+                          Provider.of<AddFriend>(context, listen: false);
+                      addFriend.addFriend(
+                          userDocs?[index]["username"],
+                          userDocs?[index]["image_url"],
+                          userDocs?[index]["uid"]);
                     },
                     child: Padding(
                       padding: const EdgeInsets.only(bottom: 8.0),

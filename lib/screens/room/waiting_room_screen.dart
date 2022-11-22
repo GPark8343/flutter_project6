@@ -2,7 +2,9 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart';
+import 'package:ifc_project1/providers/chat/add_friend.dart';
 import 'package:ifc_project1/providers/chat/waiting_channel_making.dart';
+import 'package:ifc_project1/screens/friends/friends_profile_screen.dart';
 import 'package:ifc_project1/widgets/chat/messages.dart';
 import 'package:ifc_project1/widgets/chat/new_message.dart';
 import 'package:ifc_project1/widgets/waiting/waiting_messages.dart';
@@ -77,6 +79,7 @@ class _WaitingRoomScreenState extends State<WaitingRoomScreen> {
         (ModalRoute.of(context)?.settings.arguments as Map)['membersNum'];
 
     Future<void> add() async {
+      setState(() {});
       final waitingChannelMaking =
           Provider.of<WaitingChannelMaking>(context, listen: false);
       (isFull || isIn)
@@ -84,11 +87,22 @@ class _WaitingRoomScreenState extends State<WaitingRoomScreen> {
           : waitingChannelMaking.joinChannel(groupId);
     }
 
+    Future<void> exit() async {
+      setState(() {});
+      final waitingChannelMaking =
+          Provider.of<WaitingChannelMaking>(context, listen: false);
+
+      waitingChannelMaking.exitChannel(groupId);
+    }
+
     return FutureBuilder(
         future: first(groupId, membersNum),
         builder: (context, futureSnapshot) {
           return futureSnapshot.connectionState == ConnectionState.waiting
-              ? Scaffold(appBar: AppBar(title: Text('채널 이동 중'),),
+              ? Scaffold(
+                  appBar: AppBar(
+                    title: Text('채널 이동 중'),
+                  ),
                   body: Center(
                     child: CircularProgressIndicator(),
                   ),
@@ -96,19 +110,32 @@ class _WaitingRoomScreenState extends State<WaitingRoomScreen> {
               : Scaffold(
                   appBar: AppBar(
                     title: Text('대기방 이름'),
-                    actions:isLeader?[ IconButton(
-                                onPressed: () {
-                           //실제 방으로 이동하기
-                                },
-                                icon: Icon(Icons.check))]:( (isIn || isFull)
-                        ? []
-                        : [
+                    actions: isLeader
+                        ? [
                             IconButton(
                                 onPressed: () {
-                                  add();
+                                  //실제 방으로 이동하기
                                 },
-                                icon: Icon(Icons.add))
-                          ]),
+                                icon: Icon(Icons.check))
+                          ]
+                        : (isIn
+                            ? [
+                                IconButton(
+                                    onPressed: () {
+                                      exit();
+                                      Navigator.of(context).pop();
+                                    },
+                                    icon: Icon(Icons.exit_to_app))
+                              ]
+                            : (isFull
+                                ? []
+                                : [
+                                    IconButton(
+                                        onPressed: () {
+                                          add();
+                                        },
+                                        icon: Icon(Icons.add))
+                                  ])),
                   ),
                   body: Column(
                     children: [
@@ -126,6 +153,7 @@ class _WaitingRoomScreenState extends State<WaitingRoomScreen> {
                             }
                             final userDocs =
                                 userSnapshot.data?.data()?['membersInfo'];
+
                             return Column(
                               children: [
                                 GridView.builder(
@@ -138,24 +166,98 @@ class _WaitingRoomScreenState extends State<WaitingRoomScreen> {
                                             childAspectRatio: 3 / 2,
                                             crossAxisSpacing: 10,
                                             mainAxisSpacing: 10),
-                                    itemBuilder: (ctx, i) => ClipRRect(
-                                          child: Container(
-                                            color: Colors.red,
-                                            child: GridTile(
-                                              child: GestureDetector(
-                                                onTap: () {},
-                                                child: FadeInImage(
-                                                  placeholder: AssetImage(
-                                                      'assets/images/person.png'),
-                                                  image: NetworkImage(
-                                                      userDocs[i]
-                                                          ['member_image_url']),
-                                                  fit: BoxFit.cover,
-                                                ),
+                                    itemBuilder: (ctx, i) {
+                                      return ClipRRect(
+                                        child: Container(
+                                          color: Colors.red,
+                                          child: GridTile(
+                                            child: GestureDetector(
+                                              onTap: () {
+                                                userDocs[i]['memberId'] ==
+                                                        FirebaseAuth.instance
+                                                            .currentUser?.uid
+                                                    ? null
+                                                    : showModalBottomSheet(
+                                                        context: ctx,
+                                                        builder: (_) {
+                                                          return GestureDetector(
+                                                            onTap: () {},
+                                                            child: Row(
+                                                              children: [
+                                                                isLeader
+                                                                    ? TextButton(
+                                                                        onPressed:
+                                                                            () {},
+                                                                        child: Text(
+                                                                            '방출'))
+                                                                    : Container(
+                                                                        height:
+                                                                            0,
+                                                                      ),
+                                                                TextButton(
+                                                                    onPressed:
+                                                                        () {},
+                                                                    child: Text(
+                                                                        '갠톡')),
+                                                                TextButton(
+                                                                    onPressed:
+                                                                        () {
+                                                                      Navigator.of(
+                                                                              context)
+                                                                          .pop();
+                                                                      Navigator.of(context).pushNamed(
+                                                                          FriendsProfileScreen
+                                                                              .routeName,
+                                                                          arguments: {
+                                                                            'image_url':
+                                                                                userDocs[i]['member_image_url'],
+                                                                            'username':
+                                                                                userDocs[i]['membername'],
+                                                                            'uid':
+                                                                                userDocs[i]['memberId'],
+                                                                          });
+                                                                    },
+                                                                    child: Text(
+                                                                        '프로필')),
+                                                              ],
+                                                            ),
+                                                            behavior:
+                                                                HitTestBehavior
+                                                                    .opaque, //background만 눌러서 모델 닫히게 하기
+                                                          );
+                                                        },
+                                                      );
+                                              },
+                                              child: FadeInImage(
+                                                placeholder: AssetImage(
+                                                    'assets/images/person.png'),
+                                                image: NetworkImage(userDocs[i]
+                                                    ['member_image_url']),
+                                                fit: BoxFit.cover,
                                               ),
                                             ),
+                                            footer: userDocs[0]['memberId'] ==
+                                                    userDocs[i]['memberId']
+                                                ? GridTileBar(
+                                                    backgroundColor:
+                                                        Color.fromARGB(
+                                                            221, 88, 84, 84),
+                                                    title: Center(
+                                                      child: Text(
+                                                          '${userDocs[i]['membername']}(방장)'),
+                                                    ))
+                                                : GridTileBar(
+                                                    backgroundColor:
+                                                        Color.fromARGB(
+                                                            221, 88, 84, 84),
+                                                    title: Center(
+                                                      child: Text(
+                                                          '${userDocs[i]['membername']}'),
+                                                    )),
                                           ),
-                                        )),
+                                        ),
+                                      );
+                                    }),
                                 GridView.builder(
                                     shrinkWrap: true,
                                     itemCount: membersNum -

@@ -6,12 +6,16 @@ class AddFriend with ChangeNotifier {
   void addFriend(String name, String userImage, String uid) async {
     // final userData = await FirebaseFirestore.instance.collection('users').get();
 
-   await FirebaseFirestore.instance
+    await FirebaseFirestore.instance
         .collection('users')
         .doc(FirebaseAuth.instance.currentUser?.uid)
         .collection('friends')
-        .add({'username': name, 'image_url': userImage, 'uid': uid});}
-   
-
+        .doc(uid)
+        .set({
+      'username': name,
+      'image_url': userImage,
+      'uid': uid,
+      'isBan': false
+    });
   }
-
+}

@@ -83,6 +83,30 @@ class WaitingChannelMaking with ChangeNotifier {
         .update({'membersInfo': list});
   }
 
+  Future<void> exitChannel(groupId) async {
+    final currentUser = await FirebaseFirestore.instance
+        .collection('users')
+        .doc(FirebaseAuth.instance.currentUser?.uid)
+        .get();
+    var membersInfo = await FirebaseFirestore.instance
+        .collection('waiting-groups')
+        .doc(groupId)
+        .get();
 
+    var list = (membersInfo['membersInfo'] as List);
 
+    list.removeWhere((items) => items['memberId'] == currentUser['uid']);
+  
+
+    // (membersInfo['membersInfo'] as List).add({
+    //   'memberId': currentUser['uid'],
+    //   'membername': currentUser['username'],
+    //   'member_image_url': currentUser['image_url']
+    // });
+
+    await FirebaseFirestore.instance
+        .collection('waiting-groups')
+        .doc(groupId)
+        .update({'membersInfo': list});
+  }
 }

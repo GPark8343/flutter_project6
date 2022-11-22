@@ -9,6 +9,7 @@ import 'package:ifc_project1/providers/place/filter.dart';
 import 'package:ifc_project1/providers/place/rating.dart';
 import 'package:ifc_project1/screens/chat/channel_add_screen.dart';
 import 'package:ifc_project1/screens/chat/chat_screen.dart';
+import 'package:ifc_project1/screens/friends/friends_profile_screen.dart';
 
 import 'package:ifc_project1/screens/place/place_detail_screen.dart';
 import 'package:ifc_project1/screens/room/room_add_screen.dart';
@@ -91,6 +92,7 @@ class MyApp extends StatelessWidget {
             SplashScreen.routeName: (ctx) => SplashScreen(),
             WaitingRoomScreen.routeName: (ctx) => WaitingRoomScreen(),
             RoomAddScreen.routeName: (ctx) => RoomAddScreen(),
+            FriendsProfileScreen.routeName: (ctx) => FriendsProfileScreen(),
           },
         ));
   }
