@@ -4,6 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart';
 import 'package:ifc_project1/providers/chat/add_friend.dart';
 import 'package:ifc_project1/providers/chat/waiting_channel_making.dart';
+import 'package:ifc_project1/screens/chat/channel_add_screen.dart';
+import 'package:ifc_project1/screens/chat/waiting_channel_add_screen.dart';
 import 'package:ifc_project1/screens/friends/friends_profile_screen.dart';
 import 'package:ifc_project1/widgets/chat/messages.dart';
 import 'package:ifc_project1/widgets/chat/new_message.dart';
@@ -36,7 +38,6 @@ class _WaitingRoomScreenState extends State<WaitingRoomScreen> {
           .collection('waiting-groups')
           .doc(groupId)
           .get();
-
       isLeader = membersInfo['membersInfo'][0]['memberId'] ==
           FirebaseAuth.instance.currentUser?.uid;
     });
@@ -95,6 +96,21 @@ class _WaitingRoomScreenState extends State<WaitingRoomScreen> {
       waitingChannelMaking.exitChannel(groupId);
     }
 
+    Future<void> deleteWaitingChannel() async {
+      final waitingChannelMaking =
+          Provider.of<WaitingChannelMaking>(context, listen: false);
+
+      waitingChannelMaking.deleteChannel(groupId);
+    }
+
+    Future<void> exitOthers(userId) async {
+      setState(() {});
+      final waitingChannelMaking =
+          Provider.of<WaitingChannelMaking>(context, listen: false);
+
+      waitingChannelMaking.exitOthersChannel(groupId, userId);
+    }
+
     return FutureBuilder(
         future: first(groupId, membersNum),
         builder: (context, futureSnapshot) {
@@ -112,6 +128,25 @@ class _WaitingRoomScreenState extends State<WaitingRoomScreen> {
                     title: Text('대기방 이름'),
                     actions: isLeader
                         ? [
+                            IconButton(
+                                onPressed: () async {
+                                  var membersInfo = await FirebaseFirestore
+                                      .instance
+                                      .collection('waiting-groups')
+                                      .doc(groupId)
+                                      .get();
+                                  print((membersInfo['membersInfo'] as List)
+                                      .length);
+                                  Navigator.of(context).pop();
+                                  if ((membersInfo['membersInfo'] as List)
+                                          .length ==
+                                      1) {
+                                    await deleteWaitingChannel();
+                                  } else {
+                                 await   exit();
+                                  }
+                                },
+                                icon: Icon(Icons.exit_to_app)),
                             IconButton(
                                 onPressed: () {
                                   //실제 방으로 이동하기
@@ -187,7 +222,11 @@ class _WaitingRoomScreenState extends State<WaitingRoomScreen> {
                                                                 isLeader
                                                                     ? TextButton(
                                                                         onPressed:
-                                                                            () {},
+                                                                            () {
+                                                                          exitOthers(userDocs[i]
+                                                                              [
+                                                                              'memberId']);
+                                                                        },
                                                                         child: Text(
                                                                             '방출'))
                                                                     : Container(
@@ -258,21 +297,55 @@ class _WaitingRoomScreenState extends State<WaitingRoomScreen> {
                                         ),
                                       );
                                     }),
-                                GridView.builder(
-                                    shrinkWrap: true,
-                                    itemCount: membersNum -
-                                        (userDocs as List).length, //고치기
-                                    gridDelegate:
-                                        SliverGridDelegateWithFixedCrossAxisCount(
-                                            crossAxisCount: 2,
-                                            childAspectRatio: 3 / 2,
-                                            crossAxisSpacing: 10,
-                                            mainAxisSpacing: 10),
-                                    itemBuilder: (ctx, i) => ClipRRect(
-                                          child: Container(
-                                            color: Colors.red,
-                                          ),
-                                        )),
+                                isLeader
+                                    ? GridView.builder(
+                                        shrinkWrap: true,
+                                        itemCount: membersNum -
+                                            (userDocs as List).length, //고치기
+                                        gridDelegate:
+                                            SliverGridDelegateWithFixedCrossAxisCount(
+                                                crossAxisCount: 2,
+                                                childAspectRatio: 3 / 2,
+                                                crossAxisSpacing: 10,
+                                                mainAxisSpacing: 10),
+                                        itemBuilder: (ctx, i) => ClipRRect(
+                                              child: Container(
+                                                color: Colors.red,
+                                                child: GridTile(
+                                                    child: IconButton(
+                                                  icon: Icon(Icons.add),
+                                                  onPressed: () {
+                                                    Navigator.of(context)
+                                                        .pushNamed(
+                                                            WaitingChannelAddScreen
+                                                                .routeName,
+                                                            arguments: {
+                                                          'groupId': groupId,
+                                                          'left-numbers':
+                                                              membersNum -
+                                                                  (userDocs
+                                                                          as List)
+                                                                      .length
+                                                        });
+                                                  },
+                                                )),
+                                              ),
+                                            ))
+                                    : GridView.builder(
+                                        shrinkWrap: true,
+                                        itemCount: membersNum -
+                                            (userDocs as List).length, //고치기
+                                        gridDelegate:
+                                            SliverGridDelegateWithFixedCrossAxisCount(
+                                                crossAxisCount: 2,
+                                                childAspectRatio: 3 / 2,
+                                                crossAxisSpacing: 10,
+                                                mainAxisSpacing: 10),
+                                        itemBuilder: (ctx, i) => ClipRRect(
+                                              child: Container(
+                                                color: Colors.red,
+                                              ),
+                                            ))
                               ],
                             );
                           }),

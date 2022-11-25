@@ -1,5 +1,6 @@
 import 'package:ifc_project1/providers/chat/add_friend.dart';
 import 'package:ifc_project1/providers/chat/all_ids.dart';
+import 'package:ifc_project1/providers/chat/all_ids_invite.dart';
 import 'package:ifc_project1/providers/chat/channel_making.dart';
 import 'package:ifc_project1/providers/chat/is-add.dart';
 import 'package:ifc_project1/providers/chat/waiting_channel_making.dart';
@@ -9,6 +10,8 @@ import 'package:ifc_project1/providers/place/filter.dart';
 import 'package:ifc_project1/providers/place/rating.dart';
 import 'package:ifc_project1/screens/chat/channel_add_screen.dart';
 import 'package:ifc_project1/screens/chat/chat_screen.dart';
+import 'package:ifc_project1/screens/chat/waiting_channel_add_screen.dart';
+import 'package:ifc_project1/screens/friends/ban_screen.dart';
 import 'package:ifc_project1/screens/friends/friends_profile_screen.dart';
 
 import 'package:ifc_project1/screens/place/place_detail_screen.dart';
@@ -58,6 +61,8 @@ class MyApp extends StatelessWidget {
           ),
           ChangeNotifierProvider.value(
             value: WaitingChannelMaking(),
+          ),ChangeNotifierProvider.value(
+            value: AllIdsInvite(),
           ),
         ],
         child: MaterialApp(
@@ -93,6 +98,8 @@ class MyApp extends StatelessWidget {
             WaitingRoomScreen.routeName: (ctx) => WaitingRoomScreen(),
             RoomAddScreen.routeName: (ctx) => RoomAddScreen(),
             FriendsProfileScreen.routeName: (ctx) => FriendsProfileScreen(),
+            BanScreen.routeName: (ctx) => BanScreen(),
+           WaitingChannelAddScreen.routeName: (ctx) => WaitingChannelAddScreen(),
           },
         ));
   }

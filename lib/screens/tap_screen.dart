@@ -1,12 +1,13 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 import 'package:ifc_project1/screens/chat/channel_add_screen.dart';
 import 'package:ifc_project1/screens/chat/channel_list_screen.dart';
 import 'package:ifc_project1/screens/chat/user_friend_screen.dart';
 import 'package:ifc_project1/screens/chat/user_list_screen.dart';
+import 'package:ifc_project1/screens/friends/ban_screen.dart';
 import 'package:ifc_project1/screens/room/bulletin_board_screen.dart';
 import 'package:ifc_project1/screens/room/room_add_screen.dart';
-
 
 class TapScreen extends StatefulWidget {
   const TapScreen({super.key});
@@ -46,40 +47,19 @@ class _TapScreenState extends State<TapScreen> {
       appBar: AppBar(
         title: Text(_pages[_selectedPageIndex]['title'] as String),
         actions: _selectedPageIndex == 1
-            ? [
+            ? [IconButton(
+                    onPressed: () {
+                      Navigator.of(context)
+                          .pushNamed(BanScreen.routeName);
+                    },
+                    icon: Icon(Icons.extension_off_rounded)),
                 IconButton(
                     onPressed: () {
                       Navigator.of(context)
                           .pushNamed(ChannelAddScreen.routeName);
                     },
                     icon: Icon(Icons.add)),
-                // DropdownButton(
-                // underline: Container(),
-                // icon: Icon(
-                //   Icons.more_vert,
-                //   color: Theme.of(context).primaryIconTheme.color,
-                // ),
-                // items: [
-                //   DropdownMenuItem(
-                //     child: Container(
-                //       child: Row(
-                //         children: [
-                //           Icon(Icons.exit_to_app),
-                //           SizedBox(
-                //             width: 8,
-                //           ),
-                //           Text('Logout')
-                //         ],
-                //       ),
-                //     ),
-                //     value: 'logout',
-                //   )
-                // ],
-                // onChanged: (itemIdentifier) {
-                //   if (itemIdentifier == 'logout') {
-                //     FirebaseAuth.instance.signOut();
-                //   }
-                // })
+           
               ]
             : _selectedPageIndex == 2
                 ? [
@@ -108,15 +88,20 @@ class _TapScreenState extends State<TapScreen> {
                         onChanged: (itemIdentifier) {
                           if (itemIdentifier == 'logout') {
                             FirebaseAuth.instance.signOut();
+                            GoogleSignIn().signOut();
                           }
                         })
                   ]
                 : _selectedPageIndex == 3
-                    ? [IconButton(
-                    onPressed: () {
-                      Navigator.of(context)
-                          .pushNamed(RoomAddScreen.routeName);
-                    },icon: Icon(Icons.edit),)]
+                    ? [
+                        IconButton(
+                          onPressed: () {
+                            Navigator.of(context)
+                                .pushNamed(RoomAddScreen.routeName);
+                          },
+                          icon: Icon(Icons.edit),
+                        )
+                      ]
                     : [],
       ),
       body: _pages[_selectedPageIndex]['page'] as Widget,

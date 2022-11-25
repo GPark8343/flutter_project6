@@ -30,7 +30,11 @@ class FriendsProfileScreen extends StatelessWidget {
           }
           final userDocs = snapshot.data?.docs;
           final isFriends = userDocs?.any((element) => element['uid'] == uid);
-          final isBan = userDocs?.firstWhere((element) => element['uid'] ==uid).data()['isBan'];
+          final isBan = isFriends!
+              ? userDocs
+                  ?.firstWhere((element) => element['uid'] == uid)
+                  .data()['isBan']
+              : false;
           print(isFriends);
           return Scaffold(
               appBar: AppBar(
@@ -74,12 +78,26 @@ class FriendsProfileScreen extends StatelessWidget {
                             child: Text('친구 차단 해제'))
                         : TextButton(
                             onPressed: () async {
-                              await FirebaseFirestore.instance
-                                  .collection('users')
-                                  .doc(FirebaseAuth.instance.currentUser?.uid)
-                                  .collection('friends')
-                                  .doc(uid)
-                                  .update({'isBan': true});
+                              isFriends
+                                  ? await FirebaseFirestore.instance
+                                      .collection('users')
+                                      .doc(FirebaseAuth
+                                          .instance.currentUser?.uid)
+                                      .collection('friends')
+                                      .doc(uid)
+                                      .update({'isBan': true})
+                                  : await FirebaseFirestore.instance
+                                      .collection('users')
+                                      .doc(FirebaseAuth
+                                          .instance.currentUser?.uid)
+                                      .collection('friends')
+                                      .doc(uid)
+                                      .set({
+                                      'username':username,
+                                      'image_url': image,
+                                      'uid': uid,
+                                      'isBan': true
+                                    });
                             },
                             child: Text('친구 차단'))
                   ],

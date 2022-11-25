@@ -83,6 +83,40 @@ class WaitingChannelMaking with ChangeNotifier {
         .update({'membersInfo': list});
   }
 
+  Future<void> inviteOthersChannel(String groupId, List userIds) async {
+    var list = [];
+    userIds.forEach((e) async {
+      if (e != userIds[userIds.length - 1]) {
+        var user =
+            await FirebaseFirestore.instance.collection('users').doc(e).get();
+        list.add({
+          'memberId': user['uid'],
+          'membername': user['username'],
+          'member_image_url': user['image_url']
+        });
+      } else {
+        var user =
+            await FirebaseFirestore.instance.collection('users').doc(e).get();
+        list.add({
+          'memberId': user['uid'],
+          'membername': user['username'],
+          'member_image_url': user['image_url']
+        });
+
+        var membersInfo = await FirebaseFirestore.instance
+            .collection('waiting-groups')
+            .doc(groupId)
+            .get();
+        list = [...membersInfo['membersInfo'], ...list];
+        print(list);
+        await FirebaseFirestore.instance
+            .collection('waiting-groups')
+            .doc(groupId)
+            .update({'membersInfo': list});
+      }
+    });
+  }
+
   Future<void> exitChannel(groupId) async {
     final currentUser = await FirebaseFirestore.instance
         .collection('users')
@@ -96,7 +130,49 @@ class WaitingChannelMaking with ChangeNotifier {
     var list = (membersInfo['membersInfo'] as List);
 
     list.removeWhere((items) => items['memberId'] == currentUser['uid']);
-  
+
+    // (membersInfo['membersInfo'] as List).add({
+    //   'memberId': currentUser['uid'],
+    //   'membername': currentUser['username'],
+    //   'member_image_url': currentUser['image_url']
+    // });
+
+    await FirebaseFirestore.instance
+        .collection('waiting-groups')
+        .doc(groupId)
+        .update({'membersInfo': list});
+  }
+
+  Future<void> deleteChannel(groupId) async {
+    await FirebaseFirestore.instance
+        .collection('waiting-groups')
+        .doc(groupId)
+        .collection('messages').get().then((snapshot) {
+  for (DocumentSnapshot ds in snapshot.docs){
+    ds.reference.delete();
+  }});
+    await FirebaseFirestore.instance
+        .collection('waiting-groups')
+        .doc(groupId)
+        .delete();
+
+ 
+
+
+
+  }
+
+  Future<void> exitOthersChannel(String groupId, String userId) async {
+    final currentUser =
+        await FirebaseFirestore.instance.collection('users').doc(userId).get();
+    var membersInfo = await FirebaseFirestore.instance
+        .collection('waiting-groups')
+        .doc(groupId)
+        .get();
+
+    var list = (membersInfo['membersInfo'] as List);
+
+    list.removeWhere((items) => items['memberId'] == currentUser['uid']);
 
     // (membersInfo['membersInfo'] as List).add({
     //   'memberId': currentUser['uid'],

@@ -1,11 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/src/widgets/container.dart';
-import 'package:flutter/src/widgets/framework.dart';
-import 'package:ifc_project1/screens/friends/friends_profile_screen.dart';
-
-import 'package:ifc_project1/widgets/friends/friend-item.dart';
+import 'package:ifc_project1/screens/friends/friends_profile_screen.dart';  
 import 'package:ifc_project1/widgets/friends/my_profile.dart';
 
 class UserFreindScreen extends StatelessWidget {
@@ -28,7 +24,7 @@ class UserFreindScreen extends StatelessWidget {
                 child: const CircularProgressIndicator(),
               );
             }
-            final friendDocs = friendSnapshot.data?.docs;
+            final friendDocs = friendSnapshot.data?.docs.where((element) => element['isBan'] == false).toList();;
 
             return Padding(
               padding: const EdgeInsets.all(10.0),
