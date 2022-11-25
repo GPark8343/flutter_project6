@@ -23,7 +23,6 @@ class ChannelMaking with ChangeNotifier {
         'last_message': '채널 생성 완료',
         'createdAt': Timestamp.now(),
         'allIds': allIds,
-      
       });
     });
 
@@ -48,5 +47,37 @@ class ChannelMaking with ChangeNotifier {
     });
   }
 
+  Future<void> changeRealChannel(String groupId) async {
+    await FirebaseFirestore.instance
+        .collection('waiting-groups')
+        .doc(groupId)
+        .get()
+        .then((value) =>
+            FirebaseFirestore.instance.collection('groups').doc(groupId).set({
+              'membersInfo': value.data()?['membersInfo'],
+              'groupId': groupId,
+              'last_message': '채널 생성 완료',
+              'createdAt': Timestamp.now(),
+              // 'allIds': allIds,
+            }));
 
+
+    final user = FirebaseAuth.instance.currentUser;
+
+    final userData = await FirebaseFirestore.instance
+        .collection('users')
+        .doc(user?.uid)
+        .get();
+    await FirebaseFirestore.instance //메시지 생성
+        .collection('groups')
+        .doc(groupId)
+        .collection('messages')
+        .add({
+      'text': '채널 생성 완료',
+      'createdAt': Timestamp.now(),
+      'userId': user?.uid,
+      'username': userData['username'],
+      'image_url': userData['image_url']
+    });
+  }
 }

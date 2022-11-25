@@ -3,8 +3,10 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart';
 import 'package:ifc_project1/providers/chat/add_friend.dart';
+import 'package:ifc_project1/providers/chat/channel_making.dart';
 import 'package:ifc_project1/providers/chat/waiting_channel_making.dart';
 import 'package:ifc_project1/screens/chat/channel_add_screen.dart';
+import 'package:ifc_project1/screens/chat/chat_screen.dart';
 import 'package:ifc_project1/screens/chat/waiting_channel_add_screen.dart';
 import 'package:ifc_project1/screens/friends/friends_profile_screen.dart';
 import 'package:ifc_project1/widgets/chat/messages.dart';
@@ -66,6 +68,14 @@ class _WaitingRoomScreenState extends State<WaitingRoomScreen> {
           : isFull = false;
     });
     return null;
+  }
+
+  void goto(String groupId, BuildContext context) {
+    Navigator.of(context).pushReplacementNamed(ChatScreen.routeName,
+        arguments: {
+          'currentUserId': FirebaseAuth.instance.currentUser?.uid,
+          'groupId': groupId
+        });
   }
 
   @override
@@ -143,13 +153,19 @@ class _WaitingRoomScreenState extends State<WaitingRoomScreen> {
                                       1) {
                                     await deleteWaitingChannel();
                                   } else {
-                                 await   exit();
+                                    await exit();
                                   }
                                 },
                                 icon: Icon(Icons.exit_to_app)),
                             IconButton(
-                                onPressed: () {
-                                  //실제 방으로 이동하기
+                                onPressed: () async {
+                                  final channelMaking =
+                                      Provider.of<ChannelMaking>(context,
+                                          listen: false);
+                                  await channelMaking
+                                      .changeRealChannel(groupId);
+                                  goto(groupId, context);
+                                  await deleteWaitingChannel();
                                 },
                                 icon: Icon(Icons.check))
                           ]

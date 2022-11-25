@@ -16,7 +16,6 @@ class RoomItem extends StatelessWidget {
         child: StreamBuilder(
           stream: FirebaseFirestore.instance
               .collection('waiting-groups')
-              
               .snapshots(),
           builder: (ctx, channelSnapshot) {
             if (channelSnapshot.connectionState == ConnectionState.waiting) {
@@ -25,6 +24,7 @@ class RoomItem extends StatelessWidget {
               );
             }
             final channelDocs = channelSnapshot.data?.docs;
+
             return ListView.builder(
               shrinkWrap: true,
               itemCount: channelDocs?.length,
@@ -37,9 +37,8 @@ class RoomItem extends StatelessWidget {
                             .pushNamed(WaitingRoomScreen.routeName, arguments: {
                           'currentUserId':
                               FirebaseAuth.instance.currentUser?.uid,
-                   
                           'groupId': channelDocs[index]['groupId'],
-                               'membersNum':channelDocs[index]['membersNum']
+                          'membersNum': channelDocs[index]['membersNum']
                         });
                       },
                       child: Padding(
@@ -54,7 +53,7 @@ class RoomItem extends StatelessWidget {
                           subtitle: Padding(
                             padding: const EdgeInsets.only(top: 6.0),
                             child: Text(
-                             channelDocs[index]['description'],
+                              channelDocs[index]['description'],
                               style: const TextStyle(fontSize: 15),
                             ),
                           ),
@@ -66,9 +65,7 @@ class RoomItem extends StatelessWidget {
                             radius: 30,
                           ),
                           trailing: Text(
-                            DateFormat.Hm().format(
-                                (channelDocs[index]['createdAt'] as Timestamp)
-                                    .toDate()),
+                            ' ${(channelDocs[index]['membersInfo'] as List).length}/${channelDocs[index]['membersNum']} ${DateFormat.Hm().format((channelDocs[index]['createdAt'] as Timestamp).toDate())}',
                             style: const TextStyle(
                               color: Colors.grey,
                               fontSize: 13,
