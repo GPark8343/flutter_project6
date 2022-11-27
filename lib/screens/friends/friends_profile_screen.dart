@@ -55,7 +55,7 @@ class FriendsProfileScreen extends StatelessWidget {
                       ],
                     ),
                     Text(username),
-                    isFriends!
+                    isFriends
                         ? Container()
                         : TextButton(
                             onPressed: () {

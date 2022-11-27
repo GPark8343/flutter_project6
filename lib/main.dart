@@ -8,6 +8,7 @@ import 'package:ifc_project1/providers/place/current_location.dart';
 import 'package:ifc_project1/providers/place/filter.dart';
 
 import 'package:ifc_project1/providers/place/rating.dart';
+import 'package:ifc_project1/screens/auth/auth_data_screen.dart';
 import 'package:ifc_project1/screens/chat/channel_add_screen.dart';
 import 'package:ifc_project1/screens/chat/chat_screen.dart';
 import 'package:ifc_project1/screens/chat/waiting_channel_add_screen.dart';
@@ -100,6 +101,7 @@ class MyApp extends StatelessWidget {
             FriendsProfileScreen.routeName: (ctx) => FriendsProfileScreen(),
             BanScreen.routeName: (ctx) => BanScreen(),
            WaitingChannelAddScreen.routeName: (ctx) => WaitingChannelAddScreen(),
+           AuthDataScreen.routeName: (ctx) =>AuthDataScreen(),
           },
         ));
   }
