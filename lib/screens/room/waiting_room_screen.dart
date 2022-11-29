@@ -1,19 +1,13 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:http/http.dart';
-import 'package:ifc_project1/providers/chat/add_friend.dart';
 import 'package:ifc_project1/providers/chat/channel_making.dart';
 import 'package:ifc_project1/providers/chat/waiting_channel_making.dart';
-import 'package:ifc_project1/screens/chat/channel_add_screen.dart';
 import 'package:ifc_project1/screens/chat/chat_screen.dart';
 import 'package:ifc_project1/screens/chat/waiting_channel_add_screen.dart';
 import 'package:ifc_project1/screens/friends/friends_profile_screen.dart';
-import 'package:ifc_project1/widgets/chat/messages.dart';
-import 'package:ifc_project1/widgets/chat/new_message.dart';
 import 'package:ifc_project1/widgets/waiting/waiting_messages.dart';
 import 'package:ifc_project1/widgets/waiting/waiting_new_message.dart';
-import 'package:ifc_project1/widgets/waiting/waiting_zone.dart';
 import 'package:provider/provider.dart';
 
 class WaitingRoomScreen extends StatefulWidget {
@@ -26,6 +20,8 @@ class WaitingRoomScreen extends StatefulWidget {
 
 class _WaitingRoomScreenState extends State<WaitingRoomScreen> {
   bool isFull = false;
+  bool isFullMen = false;
+  bool isFullWomen = false;
   bool isIn = false;
   bool isLeader = false;
   late Future myfuture;
@@ -58,14 +54,50 @@ class _WaitingRoomScreenState extends State<WaitingRoomScreen> {
         return e['memberId'] == FirebaseAuth.instance.currentUser?.uid;
       });
     });
+    // await FirebaseFirestore.instance
+    //     .collection('waiting-groups')
+    //     .doc(groupId)
+    //     .get()
+    //     .then((value) {
+    //   (value.data()?['membersInfo'] as List).length == membersNum
+    //       ? isFull = true
+    //       : isFull = false;
+    // });
     await FirebaseFirestore.instance
         .collection('waiting-groups')
         .doc(groupId)
         .get()
         .then((value) {
-      (value.data()?['membersInfo'] as List).length == membersNum
-          ? isFull = true
-          : isFull = false;
+      (value.data()?['membersInfo'] as List)
+                  .where((e) => e['member_gender'] == '여자')
+                  .toList()
+                  .length ==
+              membersNum / 2
+          ? isFullWomen = true
+          : isFullWomen = false;
+      ;
+    });
+    await FirebaseFirestore.instance
+        .collection('waiting-groups')
+        .doc(groupId)
+        .get()
+        .then((value) {
+      (value.data()?['membersInfo'] as List)
+                  .where((e) => e['member_gender'] == '남자')
+                  .toList()
+                  .length ==
+              membersNum / 2
+          ? isFullMen = true
+          : isFullMen = false;
+    });
+    await FirebaseFirestore.instance
+        .collection('users')
+        .doc(FirebaseAuth.instance.currentUser?.uid)
+        .get()
+        .then((value) {
+      value.data()?['gender'] == '남자'
+          ? isFull = isFullMen
+          : isFull = isFullWomen;
     });
     return null;
   }
@@ -88,7 +120,7 @@ class _WaitingRoomScreenState extends State<WaitingRoomScreen> {
 
     final membersNum =
         (ModalRoute.of(context)?.settings.arguments as Map)['membersNum'];
-
+    var half = int.tryParse('${membersNum / 2}');
     Future<void> add() async {
       setState(() {});
       final waitingChannelMaking =
@@ -145,8 +177,7 @@ class _WaitingRoomScreenState extends State<WaitingRoomScreen> {
                                       .collection('waiting-groups')
                                       .doc(groupId)
                                       .get();
-                                  print((membersInfo['membersInfo'] as List)
-                                      .length);
+
                                   Navigator.of(context).pop();
                                   if ((membersInfo['membersInfo'] as List)
                                           .length ==
@@ -188,43 +219,57 @@ class _WaitingRoomScreenState extends State<WaitingRoomScreen> {
                                         icon: Icon(Icons.add))
                                   ])),
                   ),
-                  body: Column(
-                    children: [
-                      StreamBuilder(
-                          stream: FirebaseFirestore.instance
-                              .collection('waiting-groups')
-                              .doc(groupId)
-                              .snapshots(),
-                          builder: (ctx, userSnapshot) {
-                            if (userSnapshot.connectionState ==
-                                ConnectionState.waiting) {
-                              return Center(
-                                child: const CircularProgressIndicator(),
-                              );
-                            }
-                            final userDocs =
-                                userSnapshot.data?.data()?['membersInfo'];
-
-                            return Column(
-                              children: [
-                                GridView.builder(
-                                    shrinkWrap: true,
-                                    padding: const EdgeInsets.all(10.0),
-                                    itemCount: (userDocs as List).length, //고치기
-                                    gridDelegate:
-                                        SliverGridDelegateWithFixedCrossAxisCount(
-                                            crossAxisCount: 2,
-                                            childAspectRatio: 3 / 2,
-                                            crossAxisSpacing: 10,
-                                            mainAxisSpacing: 10),
-                                    itemBuilder: (ctx, i) {
+                  body: StreamBuilder(
+                      stream: FirebaseFirestore.instance
+                          .collection('waiting-groups')
+                          .doc(groupId)
+                          .snapshots(),
+                      builder: (ctx, userSnapshot) {
+                        if (userSnapshot.connectionState ==
+                            ConnectionState.waiting) {
+                          return Center(
+                            child: const CircularProgressIndicator(),
+                          );
+                        }
+                        final creatorId = userSnapshot.data?.data()?['creatorId'];
+                        final userDocs =
+                            userSnapshot.data?.data()?['membersInfo'];
+                        final menList = (userDocs as List)
+                            .where(
+                                (element) => element['member_gender'] == '남자')
+                            .toList();
+                        final womenList = (userDocs as List)
+                            .where(
+                                (element) => element['member_gender'] == '여자')
+                            .toList();
+                        print(menList);
+                        print(womenList);
+                        return Column(
+                          children: [
+                            GridView.builder(
+                                shrinkWrap: true,
+                                padding: const EdgeInsets.all(10.0),
+                                itemCount: membersNum, //고치기
+                                gridDelegate:
+                                    SliverGridDelegateWithFixedCrossAxisCount(
+                                        crossAxisCount: 2,
+                                        childAspectRatio: 3 / 2,
+                                        crossAxisSpacing: 10,
+                                        mainAxisSpacing: 10),
+                                itemBuilder: (ctx, i) {
+                                      var halfI1 = (i / 2).toInt();
+                                  var halfI2 = (i - 1 / 2).toInt();
+                                  if (i % 2 == 0) {
+                                    print(halfI1);
+                                    //남자
+                                    if (menList.length > halfI1) {
                                       return ClipRRect(
                                         child: Container(
-                                          color: Colors.red,
+                                          color: Colors.blue,
                                           child: GridTile(
                                             child: GestureDetector(
                                               onTap: () {
-                                                userDocs[i]['memberId'] ==
+                                              menList[halfI1]['memberId'] ==
                                                         FirebaseAuth.instance
                                                             .currentUser?.uid
                                                     ? null
@@ -239,7 +284,7 @@ class _WaitingRoomScreenState extends State<WaitingRoomScreen> {
                                                                     ? TextButton(
                                                                         onPressed:
                                                                             () {
-                                                                          exitOthers(userDocs[i]
+                                                                          exitOthers(menList[halfI1]
                                                                               [
                                                                               'memberId']);
                                                                         },
@@ -265,11 +310,11 @@ class _WaitingRoomScreenState extends State<WaitingRoomScreen> {
                                                                               .routeName,
                                                                           arguments: {
                                                                             'image_url':
-                                                                                userDocs[i]['member_image_url'],
+                                                                               menList[halfI1]['member_image_url'],
                                                                             'username':
-                                                                                userDocs[i]['membername'],
+                                                                                menList[halfI1]['membername'],
                                                                             'uid':
-                                                                                userDocs[i]['memberId'],
+                                                                                menList[halfI1]['memberId'],
                                                                           });
                                                                     },
                                                                     child: Text(
@@ -286,20 +331,20 @@ class _WaitingRoomScreenState extends State<WaitingRoomScreen> {
                                               child: FadeInImage(
                                                 placeholder: AssetImage(
                                                     'assets/images/person.png'),
-                                                image: NetworkImage(userDocs[i]
+                                                image: NetworkImage(menList[halfI1]
                                                     ['member_image_url']),
                                                 fit: BoxFit.cover,
                                               ),
                                             ),
-                                            footer: userDocs[0]['memberId'] ==
-                                                    userDocs[i]['memberId']
+                                            footer: creatorId ==
+                                                    menList[halfI1]['memberId']
                                                 ? GridTileBar(
                                                     backgroundColor:
                                                         Color.fromARGB(
                                                             221, 88, 84, 84),
                                                     title: Center(
                                                       child: Text(
-                                                          '${userDocs[i]['membername']}(방장)'),
+                                                          '${menList[halfI1]['membername']}(방장)'),
                                                     ))
                                                 : GridTileBar(
                                                     backgroundColor:
@@ -307,24 +352,156 @@ class _WaitingRoomScreenState extends State<WaitingRoomScreen> {
                                                             221, 88, 84, 84),
                                                     title: Center(
                                                       child: Text(
-                                                          '${userDocs[i]['membername']}'),
+                                                          '${menList[halfI1]['membername']}'),
                                                     )),
                                           ),
                                         ),
                                       );
-                                    }),
-                                isLeader
-                                    ? GridView.builder(
-                                        shrinkWrap: true,
-                                        itemCount: membersNum -
-                                            (userDocs as List).length, //고치기
-                                        gridDelegate:
-                                            SliverGridDelegateWithFixedCrossAxisCount(
-                                                crossAxisCount: 2,
-                                                childAspectRatio: 3 / 2,
-                                                crossAxisSpacing: 10,
-                                                mainAxisSpacing: 10),
-                                        itemBuilder: (ctx, i) => ClipRRect(
+                                    } else {
+                                      return isLeader
+                                          ? ClipRRect(
+                                              child: Container(
+                                                color: Colors.blue,
+                                                child: GridTile(
+                                                    child: IconButton(
+                                                  icon: Icon(Icons.add),
+                                                  onPressed: () {
+                                                    Navigator.of(context)
+                                                        .pushNamed(
+                                                            WaitingChannelAddScreen
+                                                                .routeName,
+                                                            arguments: {
+                                                          'groupId': groupId,
+                                                          'left-men-numbers':
+                                                              membersNum / 2 -
+                                                                  (userDocs
+                                                                          as List)
+                                                                      .where((e) =>
+                                                                          e['member_gender'] ==
+                                                                          '남자')
+                                                                      .toList()
+                                                                      .length,
+                                                          'left-women-numbers':
+                                                              membersNum / 2 -
+                                                                  (userDocs
+                                                                          as List)
+                                                                      .where((e) =>
+                                                                          e['member_gender'] ==
+                                                                          '여자')
+                                                                      .toList()
+                                                                      .length
+                                                        });
+                                                  },
+                                                )),
+                                              ),
+                                            )
+                                          : ClipRRect(
+                                              child: Container(
+                                                  child: Text('남자'),
+                                                  color: Colors.blue),
+                                            );
+                                    }
+                                  } else {
+                                    //여자
+                                 
+                                    if (womenList.length > halfI2) {
+                                      return ClipRRect(
+                                        child: Container(
+                                          color: Colors.red,
+                                          child: GridTile(
+                                            child: GestureDetector(
+                                              onTap: () {
+                                            womenList[halfI2]['memberId'] ==
+                                                        FirebaseAuth.instance
+                                                            .currentUser?.uid
+                                                    ? null
+                                                    : showModalBottomSheet(
+                                                        context: ctx,
+                                                        builder: (_) {
+                                                          return GestureDetector(
+                                                            onTap: () {},
+                                                            child: Row(
+                                                              children: [
+                                                                isLeader
+                                                                    ? TextButton(
+                                                                        onPressed:
+                                                                            () {
+                                                                          exitOthers( womenList[halfI2]
+                                                                              [
+                                                                              'memberId']);
+                                                                        },
+                                                                        child: Text(
+                                                                            '방출'))
+                                                                    : Container(
+                                                                        height:
+                                                                            0,
+                                                                      ),
+                                                                TextButton(
+                                                                    onPressed:
+                                                                        () {},
+                                                                    child: Text(
+                                                                        '갠톡')),
+                                                                TextButton(
+                                                                    onPressed:
+                                                                        () {
+                                                                      Navigator.of(
+                                                                              context)
+                                                                          .pop();
+                                                                      Navigator.of(context).pushNamed(
+                                                                          FriendsProfileScreen
+                                                                              .routeName,
+                                                                          arguments: {
+                                                                            'image_url':
+                                                                                 womenList[halfI2]['member_image_url'],
+                                                                            'username':
+                                                                                 womenList[halfI2]['membername'],
+                                                                            'uid':
+                                                                                 womenList[halfI2]['memberId'],
+                                                                          });
+                                                                    },
+                                                                    child: Text(
+                                                                        '프로필')),
+                                                              ],
+                                                            ),
+                                                            behavior:
+                                                                HitTestBehavior
+                                                                    .opaque, //background만 눌러서 모델 닫히게 하기
+                                                          );
+                                                        },
+                                                      );
+                                              },
+                                              child: FadeInImage(
+                                                placeholder: AssetImage(
+                                                    'assets/images/person.png'),
+                                                image: NetworkImage( womenList[halfI2]
+                                                    ['member_image_url']),
+                                                fit: BoxFit.cover,
+                                              ),
+                                            ),
+                                            footer: creatorId ==
+                                                    womenList[halfI2]['memberId']
+                                                ? GridTileBar(
+                                                    backgroundColor:
+                                                        Color.fromARGB(
+                                                            221, 88, 84, 84),
+                                                    title: Center(
+                                                      child: Text(
+                                                          '${ womenList[halfI2]['membername']}(방장)'),
+                                                    ))
+                                                : GridTileBar(
+                                                    backgroundColor:
+                                                        Color.fromARGB(
+                                                            221, 88, 84, 84),
+                                                    title: Center(
+                                                      child: Text(
+                                                          '${ womenList[halfI2]['membername']}'),
+                                                    )),
+                                          ),
+                                        ),
+                                      );
+                                    } else {
+                                      return isLeader
+                                          ? ClipRRect(
                                               child: Container(
                                                 color: Colors.red,
                                                 child: GridTile(
@@ -337,38 +514,42 @@ class _WaitingRoomScreenState extends State<WaitingRoomScreen> {
                                                                 .routeName,
                                                             arguments: {
                                                           'groupId': groupId,
-                                                          'left-numbers':
-                                                              membersNum -
+                                                          'left-men-numbers':
+                                                              membersNum / 2 -
                                                                   (userDocs
                                                                           as List)
+                                                                      .where((e) =>
+                                                                          e['member_gender'] ==
+                                                                          '남자')
+                                                                      .toList()
+                                                                      .length,
+                                                          'left-women-numbers':
+                                                              membersNum / 2 -
+                                                                  (userDocs
+                                                                          as List)
+                                                                      .where((e) =>
+                                                                          e['member_gender'] ==
+                                                                          '여자')
+                                                                      .toList()
                                                                       .length
                                                         });
                                                   },
                                                 )),
                                               ),
-                                            ))
-                                    : GridView.builder(
-                                        shrinkWrap: true,
-                                        itemCount: membersNum -
-                                            (userDocs as List).length, //고치기
-                                        gridDelegate:
-                                            SliverGridDelegateWithFixedCrossAxisCount(
-                                                crossAxisCount: 2,
-                                                childAspectRatio: 3 / 2,
-                                                crossAxisSpacing: 10,
-                                                mainAxisSpacing: 10),
-                                        itemBuilder: (ctx, i) => ClipRRect(
+                                            )
+                                          : ClipRRect(
                                               child: Container(
-                                                color: Colors.red,
-                                              ),
-                                            ))
-                              ],
-                            );
-                          }),
-                      Expanded(child: WaitingMessages(currentUserId, groupId)),
-                      WaitingNewMessage(currentUserId, groupId),
-                    ],
-                  ),
+                                                  child: Text('여자'),
+                                                  color: Colors.red),
+                                            );
+                                    }
+                                  }
+                                }),
+                          ],
+                        );
+                      }),
+                  // Expanded(child: WaitingMessages(currentUserId, groupId)),
+                  // WaitingNewMessage(currentUserId, groupId),
                 );
         });
   }

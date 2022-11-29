@@ -1,12 +1,13 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_storage/firebase_storage.dart';
+
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-import 'dart:io';
+
 import 'package:google_sign_in/google_sign_in.dart';
-import 'package:ifc_project1/screens/auth/auth_data_screen.dart';
-import 'package:ifc_project1/widgets/Auth/auth_form.dart';
+import 'package:ifc_project1/providers/auth/user_check.dart';
+
+
+import 'package:provider/provider.dart';
 
 class AuthScreen extends StatefulWidget {
   const AuthScreen({super.key});
@@ -89,10 +90,31 @@ class _AuthScreenState extends State<AuthScreen> {
       );
       // Once signed in, return the UserCredential
 
+      final authResult =
+          await FirebaseAuth.instance.signInWithCredential(credential);
+      final user = authResult.user;
+
+      final userCheck = Provider.of<UserCheck>(context, listen: false);
+      await userCheck.userCheck();
+      var isEnrolled = userCheck.isEnrolled;
+
+      if (!isEnrolled) {
+        await FirebaseFirestore.instance
+            .collection('users')
+            .doc(authResult.user?.uid)
+            .set({
+          'username': user?.displayName,
+          'email': user?.email,
+          'image_url': user?.photoURL,
+          'uid': authResult.user?.uid,
+          'school': 'none',
+          'department': 'none',
+          'gender': 'none',
+        });
+      }
+
       // 여기서부터 제출해야 함
 
-      Navigator.of(context).pushNamed(AuthDataScreen.routeName,
-          arguments: {'credential': credential});
     } catch (error) {
       print(error);
     }

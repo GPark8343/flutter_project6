@@ -32,8 +32,10 @@ class _WaitingChannelAddScreenState extends State<WaitingChannelAddScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final leftNumbers = (ModalRoute.of(context)?.settings.arguments
-        as Map)['left-numbers']; //얘보다 크면 안됨
+    final leftMenNumbers = (ModalRoute.of(context)?.settings.arguments
+        as Map)['left-men-numbers']; //얘보다 크면 안됨
+    final leftWomenNumbers = (ModalRoute.of(context)?.settings.arguments
+        as Map)['left-women-numbers']; //얘보다 크면 안됨
     final groupId =
         (ModalRoute.of(context)?.settings.arguments as Map)['groupId'];
     return Scaffold(
@@ -53,10 +55,34 @@ class _WaitingChannelAddScreenState extends State<WaitingChannelAddScreen> {
                                 .idsList;
                         var userIdsTool =
                             Provider.of<AllIdsInvite>(context, listen: false);
+                        var _menNumber = 0;
+                        var _womenNumber = 0;
 
-                        if (userIds.length > leftNumbers || userIds.isEmpty) {
+                        await FirebaseFirestore.instance
+                            .collection('users')
+                            .where('gender', isEqualTo: '여자')
+                            .get()
+                            .then((value) => _womenNumber= value.docs
+                                .where((element) =>
+                                    userIds.contains(element.data()['uid']))
+                                .toList()
+                                .length);
+                        await FirebaseFirestore.instance
+                            .collection('users')
+                            .where('gender', isEqualTo: '남자')
+                            .get()
+                            .then((value) =>_menNumber= value.docs
+                                .where((element) =>
+                                    userIds.contains(element.data()['uid']))
+                                .toList()
+                                .length);
+                        print(_menNumber);
+                        print(_womenNumber);
+                        if (_menNumber > leftMenNumbers ||
+                            _womenNumber > leftWomenNumbers ||
+                            userIds.isEmpty) {
                           setState(() {});
-                          print(userIds.length);
+
                           //남은방 수 초과 아님 이미 있는 채팅방 또 생성X
 
                         } else {

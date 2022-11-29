@@ -15,7 +15,10 @@ class WaitingChannelMaking with ChangeNotifier {
       membersInfo.add({
         'memberId': userData['uid'],
         'membername': userData['username'],
-        'member_image_url': userData['image_url']
+        'member_image_url': userData['image_url'],
+        'member_school': userData['school'],
+        'member_department': userData['department'],
+        'member_gender': userData['gender'],
       });
       await FirebaseFirestore.instance
           .collection('waiting-groups')
@@ -24,7 +27,7 @@ class WaitingChannelMaking with ChangeNotifier {
         'membersInfo': membersInfo,
         'groupId': groupId,
         'createdAt': Timestamp.now(),
-        'allIds': allIds,
+        'creatorId': FirebaseAuth.instance.currentUser?.uid,
         'membersNum': membersNum,
         'title': title,
         'description': description
@@ -67,15 +70,14 @@ class WaitingChannelMaking with ChangeNotifier {
       {
         'memberId': currentUser['uid'],
         'membername': currentUser['username'],
-        'member_image_url': currentUser['image_url']
+        'member_image_url': currentUser['image_url'],
+        'member_school': currentUser['school'],
+        'member_department': currentUser['department'],
+        'member_gender': currentUser['gender'],
       },
     ];
 
-    // (membersInfo['membersInfo'] as List).add({
-    //   'memberId': currentUser['uid'],
-    //   'membername': currentUser['username'],
-    //   'member_image_url': currentUser['image_url']
-    // });
+   
 
     await FirebaseFirestore.instance
         .collection('waiting-groups')
@@ -92,7 +94,10 @@ class WaitingChannelMaking with ChangeNotifier {
         list.add({
           'memberId': user['uid'],
           'membername': user['username'],
-          'member_image_url': user['image_url']
+          'member_image_url': user['image_url'],
+          'member_school': user['school'],
+          'member_department': user['department'],
+          'member_gender': user['gender'],
         });
       } else {
         var user =
@@ -100,7 +105,10 @@ class WaitingChannelMaking with ChangeNotifier {
         list.add({
           'memberId': user['uid'],
           'membername': user['username'],
-          'member_image_url': user['image_url']
+          'member_image_url': user['image_url'],
+          'member_school': user['school'],
+          'member_department': user['department'],
+          'member_gender': user['gender'],
         });
 
         var membersInfo = await FirebaseFirestore.instance
@@ -108,7 +116,7 @@ class WaitingChannelMaking with ChangeNotifier {
             .doc(groupId)
             .get();
         list = [...membersInfo['membersInfo'], ...list];
-        print(list);
+
         await FirebaseFirestore.instance
             .collection('waiting-groups')
             .doc(groupId)
@@ -131,12 +139,6 @@ class WaitingChannelMaking with ChangeNotifier {
 
     list.removeWhere((items) => items['memberId'] == currentUser['uid']);
 
-    // (membersInfo['membersInfo'] as List).add({
-    //   'memberId': currentUser['uid'],
-    //   'membername': currentUser['username'],
-    //   'member_image_url': currentUser['image_url']
-    // });
-
     await FirebaseFirestore.instance
         .collection('waiting-groups')
         .doc(groupId)
@@ -147,19 +149,17 @@ class WaitingChannelMaking with ChangeNotifier {
     await FirebaseFirestore.instance
         .collection('waiting-groups')
         .doc(groupId)
-        .collection('messages').get().then((snapshot) {
-  for (DocumentSnapshot ds in snapshot.docs){
-    ds.reference.delete();
-  }});
+        .collection('messages')
+        .get()
+        .then((snapshot) {
+      for (DocumentSnapshot ds in snapshot.docs) {
+        ds.reference.delete();
+      }
+    });
     await FirebaseFirestore.instance
         .collection('waiting-groups')
         .doc(groupId)
         .delete();
-
- 
-
-
-
   }
 
   Future<void> exitOthersChannel(String groupId, String userId) async {

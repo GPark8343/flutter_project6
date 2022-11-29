@@ -1,21 +1,23 @@
 import 'package:flutter/material.dart';
 
 class AllIdsInvite with ChangeNotifier {
- List idsList=[];
-
+  List idsList = [];
+ 
   void addAllId(uid) {
-   idsList.add(uid);
+    idsList.add(uid);
     idsList.sort();
     notifyListeners();
   }
+
   void clearaddAllIds() {
     idsList.clear();
-      idsList.sort();
+    idsList.sort();
     notifyListeners();
   }
-   void deleteAllId(uid) {
-   idsList.remove(uid);
- 
+
+  void deleteAllId(uid) {
+    idsList.remove(uid);
+
     notifyListeners();
   }
 }

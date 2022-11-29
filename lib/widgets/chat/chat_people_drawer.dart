@@ -70,11 +70,21 @@ class ChatPeopleDrawer extends StatelessWidget {
                                 child: Padding(
                                   padding: const EdgeInsets.only(bottom: 8.0),
                                   child: ListTile(
-                                    title: Text(
-                                      userDocs?[index]['username'],
-                                      style: const TextStyle(
-                                        fontSize: 18,
-                                      ),
+                                    title: Row(
+                                      children: [
+                                        Expanded(
+                                          child: Text(
+                                            userDocs?[index]['username'],
+                                            style: const TextStyle(
+                                              fontSize: 18,
+                                            ),overflow:TextOverflow.ellipsis,
+                                          ),
+                                        ),
+                                        userDocs?[index]['gender'] ==
+                                                '남자'
+                                            ? Icon(Icons.man)
+                                            : Icon(Icons.woman),
+                                      ],
                                     ),
                                     leading: CircleAvatar(
                                       backgroundImage: NetworkImage(
@@ -127,12 +137,23 @@ class ChatPeopleDrawer extends StatelessWidget {
                                       padding:
                                           const EdgeInsets.only(bottom: 8.0),
                                       child: ListTile(
-                                        title: Text(
-                                          chatDocs?['membersInfo'][index]
-                                              ['membername'],
-                                          style: const TextStyle(
-                                            fontSize: 18,
-                                          ),
+                                        title: Row(
+                                          children: [
+                                            Expanded(
+                                              child: Text(
+                                                chatDocs?['membersInfo'][index]
+                                                    ['membername'],
+                                                style: const TextStyle(
+                                                  fontSize: 18,
+                                                ),overflow:TextOverflow.ellipsis,
+                                              ),
+                                            ),
+                                            chatDocs?['membersInfo'][index]
+                                                        ['member_gender'] ==
+                                                    '남자'
+                                                ? Icon(Icons.man)
+                                                : Icon(Icons.woman),
+                                          ],
                                         ),
                                         leading: CircleAvatar(
                                           backgroundImage: NetworkImage(
@@ -141,6 +162,8 @@ class ChatPeopleDrawer extends StatelessWidget {
                                           ),
                                           radius: 30,
                                         ),
+                                        trailing: Text(
+                                            '${chatDocs?['membersInfo'][index]['member_school']}'),
                                       ),
                                     ),
                                   ),

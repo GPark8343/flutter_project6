@@ -15,7 +15,10 @@ class ChannelMaking with ChangeNotifier {
       membersInfo.add({
         'memberId': userData['uid'],
         'membername': userData['username'],
-        'member_image_url': userData['image_url']
+        'member_image_url': userData['image_url'],
+        'member_school':userData['school'],
+        'member_department':userData['department'],
+         'member_gender':userData['gender'],
       });
       await FirebaseFirestore.instance.collection('groups').doc(groupId).set({
         'membersInfo': membersInfo,

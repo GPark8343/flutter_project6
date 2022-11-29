@@ -1,3 +1,4 @@
+import 'package:ifc_project1/providers/auth/user_check.dart';
 import 'package:ifc_project1/providers/chat/add_friend.dart';
 import 'package:ifc_project1/providers/chat/all_ids.dart';
 import 'package:ifc_project1/providers/chat/all_ids_invite.dart';
@@ -64,6 +65,8 @@ class MyApp extends StatelessWidget {
             value: WaitingChannelMaking(),
           ),ChangeNotifierProvider.value(
             value: AllIdsInvite(),
+          ),ChangeNotifierProvider.value(
+            value: UserCheck(),
           ),
         ],
         child: MaterialApp(
@@ -87,7 +90,7 @@ class MyApp extends StatelessWidget {
               if (userSnapshot
                   .hasData /*|| FirebaseAuth.instance.currentUser != null*/) {
                 return TapScreen();
-              }
+              }else
               return AuthScreen();
             },
           ),

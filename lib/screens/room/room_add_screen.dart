@@ -1,10 +1,9 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:ifc_project1/providers/chat/channel_making.dart';
+
 import 'package:ifc_project1/providers/chat/waiting_channel_making.dart';
-import 'package:ifc_project1/screens/chat/channel_add_screen.dart';
+
 import 'package:ifc_project1/screens/room/waiting_room_screen.dart';
 
 import 'package:provider/provider.dart';
@@ -17,6 +16,10 @@ class RoomAddScreen extends StatefulWidget {
   @override
   State<RoomAddScreen> createState() => _RoomAddScreenState();
 }
+
+enum RoomNumber { NONE, TWO, FOUR, SIX, EIGHT, TEN }
+
+RoomNumber _roomNumber = RoomNumber.NONE;
 
 class _RoomAddScreenState extends State<RoomAddScreen> {
   var isLoading = false;
@@ -34,8 +37,9 @@ class _RoomAddScreenState extends State<RoomAddScreen> {
         (FirebaseAuth.instance.currentUser?.uid as String),
         [],
         groupId,
-        int.parse(_membersNum),
-        _title,_description);
+        _membersNum,
+        _title,
+        _description);
   }
 
   void goto(String groupId, BuildContext context) {
@@ -43,7 +47,7 @@ class _RoomAddScreenState extends State<RoomAddScreen> {
         .pushReplacementNamed(WaitingRoomScreen.routeName, arguments: {
       'currentUserId': FirebaseAuth.instance.currentUser?.uid,
       'groupId': groupId,
-      'membersNum': int.parse(_membersNum)
+      'membersNum': _membersNum
     });
   }
 
@@ -72,7 +76,7 @@ class _RoomAddScreenState extends State<RoomAddScreen> {
                       setState(() {
                         isLoading = true;
                       });
-                      _trySubmit();
+                      if (_membersNum != 0) _trySubmit();
                       setState(() {
                         isLoading = false;
                       });
@@ -92,32 +96,122 @@ class _RoomAddScreenState extends State<RoomAddScreen> {
                     child: Column(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        TextFormField(
-                          key: ValueKey('members number'),
-                          autocorrect: false,
-                          textCapitalization: TextCapitalization.none,
-                          enableSuggestions: false,
-                          inputFormatters: [
-                            FilteringTextInputFormatter.allow(RegExp(r'[0-9]')),
-                          ],
-                          validator: (value) {
-                            if (value!.isEmpty) {
-                              return 'Please enter a valid number.';
-                            } else if (num.parse(value).runtimeType != int) {
-                              return 'Please enter an int.';
-                            } else if (int.parse(value) <= 1 ||
-                                int.parse(value) > 10) {
-                              return 'Please enter a valid number between 2~10.';
-                            }
-                            return null;
-                          },
-                          keyboardType: TextInputType.number,
-                          decoration:
-                              InputDecoration(labelText: 'number of members'),
-                          onSaved: (value) {
-                            _membersNum = value;
-                          },
-                        ),
+                        RadioListTile(
+                            key: ValueKey('number 2'),
+                            title: Text('1대1'),
+                            value: RoomNumber.TWO,
+                            groupValue: _roomNumber,
+                            onChanged: (value) {
+                              setState(() {
+                                if (value != null) {
+                                  _membersNum = value == RoomNumber.NONE
+                                      ? 0
+                                      : value == RoomNumber.TWO
+                                          ? 2
+                                          : value == RoomNumber.FOUR
+                                              ? 4
+                                              : value == RoomNumber.SIX
+                                                  ? 6
+                                                  : value == RoomNumber.EIGHT
+                                                      ? 8
+                                                      : 10;
+                                }
+                                _roomNumber = value as RoomNumber;
+                              });
+                              print(_membersNum);
+                            }),
+                        RadioListTile(
+                            key: ValueKey('number 4'),
+                            title: Text('2대2'),
+                            value: RoomNumber.FOUR,
+                            groupValue: _roomNumber,
+                            onChanged: (value) {
+                              setState(() {
+                                if (value != null) {
+                                  _membersNum = value == RoomNumber.NONE
+                                      ? 0
+                                      : value == RoomNumber.TWO
+                                          ? 2
+                                          : value == RoomNumber.FOUR
+                                              ? 4
+                                              : value == RoomNumber.SIX
+                                                  ? 6
+                                                  : value == RoomNumber.EIGHT
+                                                      ? 8
+                                                      : 10;
+                                }
+                                _roomNumber = value as RoomNumber;
+                              });
+                            }),
+                        RadioListTile(
+                            key: ValueKey('number 6'),
+                            title: Text('3대3'),
+                            value: RoomNumber.SIX,
+                            groupValue: _roomNumber,
+                            onChanged: (value) {
+                              setState(() {
+                                if (value != null) {
+                                  _membersNum = value == RoomNumber.NONE
+                                      ? 0
+                                      : value == RoomNumber.TWO
+                                          ? 2
+                                          : value == RoomNumber.FOUR
+                                              ? 4
+                                              : value == RoomNumber.SIX
+                                                  ? 6
+                                                  : value == RoomNumber.EIGHT
+                                                      ? 8
+                                                      : 10;
+                                }
+                                _roomNumber = value as RoomNumber;
+                              });
+                            }),
+                        RadioListTile(
+                            key: ValueKey('number 8'),
+                            title: Text('4대4'),
+                            value: RoomNumber.EIGHT,
+                            groupValue: _roomNumber,
+                            onChanged: (value) {
+                              setState(() {
+                                if (value != null) {
+                                  _membersNum = value == RoomNumber.NONE
+                                      ? 0
+                                      : value == RoomNumber.TWO
+                                          ? 2
+                                          : value == RoomNumber.FOUR
+                                              ? 4
+                                              : value == RoomNumber.SIX
+                                                  ? 6
+                                                  : value == RoomNumber.EIGHT
+                                                      ? 8
+                                                      : 10;
+                                }
+                                _roomNumber = value as RoomNumber;
+                              });
+                            }),
+                        RadioListTile(
+                            key: ValueKey('number 10'),
+                            title: Text('5대5'),
+                            value: RoomNumber.TEN,
+                            groupValue: _roomNumber,
+                            onChanged: (value) {
+                              setState(() {
+                                if (value != null) {
+                                  _membersNum = value == RoomNumber.NONE
+                                      ? 0
+                                      : value == RoomNumber.TWO
+                                          ? 2
+                                          : value == RoomNumber.FOUR
+                                              ? 4
+                                              : value == RoomNumber.SIX
+                                                  ? 6
+                                                  : value == RoomNumber.EIGHT
+                                                      ? 8
+                                                      : 10;
+                                }
+                                _roomNumber = value as RoomNumber;
+                              });
+                            }),
                         TextFormField(
                           key: ValueKey('title'),
                           autocorrect: true,
