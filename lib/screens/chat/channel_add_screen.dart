@@ -36,7 +36,19 @@ class _ChannelAddScreenState extends State<ChannelAddScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(
+        appBar: AppBar(leading: isLoading
+              ? IconButton(
+                  icon: Icon(Icons.arrow_back), // <- 아이콘도 동일한 것을 사용
+                  onPressed: () {
+                    // <- 이전 페이지로 이동.
+                  },
+                )
+              : IconButton(
+                  icon: Icon(Icons.arrow_back), // <- 아이콘도 동일한 것을 사용
+                  onPressed: () {
+                    Navigator.pop(context); // <- 이전 페이지로 이동.
+                  },
+                ),
           actions: isLoading
               ? []
               : [

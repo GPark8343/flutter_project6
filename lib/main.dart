@@ -1,3 +1,4 @@
+import 'package:ifc_project1/colors.dart';
 import 'package:ifc_project1/providers/auth/user_check.dart';
 import 'package:ifc_project1/providers/chat/add_friend.dart';
 import 'package:ifc_project1/providers/chat/all_ids.dart';
@@ -63,24 +64,23 @@ class MyApp extends StatelessWidget {
           ),
           ChangeNotifierProvider.value(
             value: WaitingChannelMaking(),
-          ),ChangeNotifierProvider.value(
+          ),
+          ChangeNotifierProvider.value(
             value: AllIdsInvite(),
-          ),ChangeNotifierProvider.value(
+          ),
+          ChangeNotifierProvider.value(
             value: UserCheck(),
           ),
         ],
         child: MaterialApp(
+          debugShowCheckedModeBanner: false,
           title: 'FlutterChat',
-          theme: ThemeData(
-              primarySwatch: Colors.pink,
-              backgroundColor: Colors.pink,
-              accentColor: Colors.deepPurple,
-              accentColorBrightness: Brightness.dark,
-              buttonTheme: ButtonTheme.of(context).copyWith(
-                  buttonColor: Colors.pink,
-                  textTheme: ButtonTextTheme.primary,
-                  shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(20)))),
+          theme: ThemeData.dark().copyWith(
+        scaffoldBackgroundColor: backgroundColor,
+        appBarTheme: const AppBarTheme(
+          color: appBarColor,
+        ),
+      ),
           home: StreamBuilder(
             stream: FirebaseAuth.instance.authStateChanges(),
             builder: (ctx, userSnapshot) {
@@ -90,8 +90,8 @@ class MyApp extends StatelessWidget {
               if (userSnapshot
                   .hasData /*|| FirebaseAuth.instance.currentUser != null*/) {
                 return TapScreen();
-              }else
-              return AuthScreen();
+              } else
+                return AuthScreen();
             },
           ),
           routes: {
@@ -103,8 +103,9 @@ class MyApp extends StatelessWidget {
             RoomAddScreen.routeName: (ctx) => RoomAddScreen(),
             FriendsProfileScreen.routeName: (ctx) => FriendsProfileScreen(),
             BanScreen.routeName: (ctx) => BanScreen(),
-           WaitingChannelAddScreen.routeName: (ctx) => WaitingChannelAddScreen(),
-           AuthDataScreen.routeName: (ctx) =>AuthDataScreen(),
+            WaitingChannelAddScreen.routeName: (ctx) =>
+                WaitingChannelAddScreen(),
+            AuthDataScreen.routeName: (ctx) => AuthDataScreen(),
           },
         ));
   }

@@ -52,6 +52,15 @@ class _RoomAddScreenState extends State<RoomAddScreen> {
   }
 
   @override
+  void initState() {
+    setState(() {
+      _membersNum = 0;
+      _roomNumber = RoomNumber.NONE;
+    });
+    super.initState();
+  }
+
+  @override
   Widget build(BuildContext context) {
     void _trySubmit() {
       final isValid = _formKey.currentState?.validate();
@@ -66,7 +75,19 @@ class _RoomAddScreenState extends State<RoomAddScreen> {
     }
 
     return Scaffold(
-        appBar: AppBar(
+        appBar: AppBar(  leading: isLoading
+              ? IconButton(
+                  icon: Icon(Icons.arrow_back), // <- 아이콘도 동일한 것을 사용
+                  onPressed: () {
+                    // <- 이전 페이지로 이동.
+                  },
+                )
+              : IconButton(
+                  icon: Icon(Icons.arrow_back), // <- 아이콘도 동일한 것을 사용
+                  onPressed: () {
+                    Navigator.pop(context); // <- 이전 페이지로 이동.
+                  },
+                ),
           title: Text('방만들기'),
           actions: isLoading
               ? []

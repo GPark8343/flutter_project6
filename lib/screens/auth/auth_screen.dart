@@ -6,7 +6,6 @@ import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:ifc_project1/providers/auth/user_check.dart';
 
-
 import 'package:provider/provider.dart';
 
 class AuthScreen extends StatefulWidget {
@@ -97,8 +96,15 @@ class _AuthScreenState extends State<AuthScreen> {
       final userCheck = Provider.of<UserCheck>(context, listen: false);
       await userCheck.userCheck();
       var isEnrolled = userCheck.isEnrolled;
-
-      if (!isEnrolled) {
+      var isUser;
+      print('asdada: $isEnrolled');
+     await FirebaseFirestore.instance
+          .collection('users')
+          .doc(authResult.user?.uid)
+          .get()
+          .then((value) => isUser = value.data()?['username']);
+      print('isUser: $isUser');
+      if (isUser == null) {
         await FirebaseFirestore.instance
             .collection('users')
             .doc(authResult.user?.uid)

@@ -52,13 +52,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
           .where('uid', isEqualTo: FirebaseAuth.instance.currentUser?.uid)
           .snapshots(),
       builder: (ctx, snapshot) {
-        if (snapshot.connectionState == ConnectionState.waiting) {
+        final userDocs = snapshot.data?.docs;
+        if (snapshot.connectionState == ConnectionState.waiting ||
+            userDocs!.isEmpty) {
           return Center(
             child: const CircularProgressIndicator(),
           );
         }
 
-        final userDocs = snapshot.data?.docs;
         return Padding(
             padding: const EdgeInsets.all(10.0),
             child: ListView.builder(
@@ -108,39 +109,38 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                   ),
                                   const Divider(indent: 85),
                                   StreamBuilder(
-                                          stream: FirebaseFirestore.instance
-                                              .collection('users')
-                                              .doc(FirebaseAuth
-                                                  .instance.currentUser?.uid)
-                                              .snapshots(),
-                                          builder: (ctx, snapshot) {
-                                            final userDocs =
-                                                snapshot.data?.data();
-                                            if (snapshot.connectionState ==
-                                                ConnectionState.waiting) {
-                                              return Center(
-                                                child:
-                                                    const CircularProgressIndicator(),
-                                              );
-                                            }
+                                      stream: FirebaseFirestore.instance
+                                          .collection('users')
+                                          .doc(FirebaseAuth
+                                              .instance.currentUser?.uid)
+                                          .snapshots(),
+                                      builder: (ctx, snapshot) {
+                                        final userDocs = snapshot.data?.data();
+                                        if (snapshot.connectionState ==
+                                            ConnectionState.waiting) {
+                                          return Center(
+                                            child:
+                                                const CircularProgressIndicator(),
+                                          );
+                                        }
 
-                                            return Column(
-                                              children: [
-                                                ListTile(
-                                                  title: Text(
-                                                      'school: ${userDocs?['school']}'),
-                                                ),
-                                                ListTile(
-                                                  title: Text(
-                                                      'department: ${userDocs?['department']}'),
-                                                ),
-                                                ListTile(
-                                                  title: Text(
-                                                      'gender: ${userDocs?['gender']}'),
-                                                )
-                                              ],
-                                            );
-                                          })
+                                        return Column(
+                                          children: [
+                                            ListTile(
+                                              title: Text(
+                                                  'school: ${userDocs?['school']}'),
+                                            ),
+                                            ListTile(
+                                              title: Text(
+                                                  'department: ${userDocs?['department']}'),
+                                            ),
+                                            ListTile(
+                                              title: Text(
+                                                  'gender: ${userDocs?['gender']}'),
+                                            )
+                                          ],
+                                        );
+                                      })
                                 ],
                               );
                       });

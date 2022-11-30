@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:ifc_project1/colors.dart';
 
 class NewMessage extends StatefulWidget {
   final String currentUserId;
@@ -74,7 +75,7 @@ class _NewMessageState extends State<NewMessage> {
           IconButton(
             onPressed: _enteredMessage.trim().isEmpty ? null : _sendMessage,
             icon: Icon(Icons.send),
-            color: Theme.of(context).primaryColor,
+            color: greyColor,
           )
         ],
       ),

@@ -19,6 +19,7 @@ class WaitingRoomScreen extends StatefulWidget {
 }
 
 class _WaitingRoomScreenState extends State<WaitingRoomScreen> {
+  var isLoading = false;
   bool isFull = false;
   bool isFullMen = false;
   bool isFullWomen = false;
@@ -27,79 +28,81 @@ class _WaitingRoomScreenState extends State<WaitingRoomScreen> {
   late Future myfuture;
 
   Future first(String groupId, num membersNum) async {
-    await FirebaseFirestore.instance
-        .collection('waiting-groups')
-        .doc(groupId)
-        .get()
-        .then((value) async {
-      var membersInfo = await FirebaseFirestore.instance
+    if (!isLoading) {
+      await FirebaseFirestore.instance
           .collection('waiting-groups')
           .doc(groupId)
-          .get();
-      isLeader = membersInfo['membersInfo'][0]['memberId'] ==
-          FirebaseAuth.instance.currentUser?.uid;
-    });
-
-    await FirebaseFirestore.instance
-        .collection('waiting-groups')
-        .doc(groupId)
-        .get()
-        .then((value) async {
-      var membersInfo = await FirebaseFirestore.instance
-          .collection('waiting-groups')
-          .doc(groupId)
-          .get();
-
-      isIn = (membersInfo['membersInfo'] as List).any((e) {
-        return e['memberId'] == FirebaseAuth.instance.currentUser?.uid;
+          .get()
+          .then((value) async {
+        var membersInfo = await FirebaseFirestore.instance
+            .collection('waiting-groups')
+            .doc(groupId)
+            .get();
+        isLeader = membersInfo['membersInfo'][0]['memberId'] ==
+            FirebaseAuth.instance.currentUser?.uid;
       });
-    });
-    // await FirebaseFirestore.instance
-    //     .collection('waiting-groups')
-    //     .doc(groupId)
-    //     .get()
-    //     .then((value) {
-    //   (value.data()?['membersInfo'] as List).length == membersNum
-    //       ? isFull = true
-    //       : isFull = false;
-    // });
-    await FirebaseFirestore.instance
-        .collection('waiting-groups')
-        .doc(groupId)
-        .get()
-        .then((value) {
-      (value.data()?['membersInfo'] as List)
-                  .where((e) => e['member_gender'] == '여자')
-                  .toList()
-                  .length ==
-              membersNum / 2
-          ? isFullWomen = true
-          : isFullWomen = false;
-      ;
-    });
-    await FirebaseFirestore.instance
-        .collection('waiting-groups')
-        .doc(groupId)
-        .get()
-        .then((value) {
-      (value.data()?['membersInfo'] as List)
-                  .where((e) => e['member_gender'] == '남자')
-                  .toList()
-                  .length ==
-              membersNum / 2
-          ? isFullMen = true
-          : isFullMen = false;
-    });
-    await FirebaseFirestore.instance
-        .collection('users')
-        .doc(FirebaseAuth.instance.currentUser?.uid)
-        .get()
-        .then((value) {
-      value.data()?['gender'] == '남자'
-          ? isFull = isFullMen
-          : isFull = isFullWomen;
-    });
-    return null;
+
+      await FirebaseFirestore.instance
+          .collection('waiting-groups')
+          .doc(groupId)
+          .get()
+          .then((value) async {
+        var membersInfo = await FirebaseFirestore.instance
+            .collection('waiting-groups')
+            .doc(groupId)
+            .get();
+
+        isIn = (membersInfo['membersInfo'] as List).any((e) {
+          return e['memberId'] == FirebaseAuth.instance.currentUser?.uid;
+        });
+      });
+      // await FirebaseFirestore.instance
+      //     .collection('waiting-groups')
+      //     .doc(groupId)
+      //     .get()
+      //     .then((value) {
+      //   (value.data()?['membersInfo'] as List).length == membersNum
+      //       ? isFull = true
+      //       : isFull = false;
+      // });
+      await FirebaseFirestore.instance
+          .collection('waiting-groups')
+          .doc(groupId)
+          .get()
+          .then((value) {
+        (value.data()?['membersInfo'] as List)
+                    .where((e) => e['member_gender'] == '여자')
+                    .toList()
+                    .length ==
+                membersNum / 2
+            ? isFullWomen = true
+            : isFullWomen = false;
+        ;
+      });
+      await FirebaseFirestore.instance
+          .collection('waiting-groups')
+          .doc(groupId)
+          .get()
+          .then((value) {
+        (value.data()?['membersInfo'] as List)
+                    .where((e) => e['member_gender'] == '남자')
+                    .toList()
+                    .length ==
+                membersNum / 2
+            ? isFullMen = true
+            : isFullMen = false;
+      });
+      await FirebaseFirestore.instance
+          .collection('users')
+          .doc(FirebaseAuth.instance.currentUser?.uid)
+          .get()
+          .then((value) {
+        value.data()?['gender'] == '남자'
+            ? isFull = isFullMen
+            : isFull = isFullWomen;
+      });
+      return null;
+    }
   }
 
   void goto(String groupId, BuildContext context) {
@@ -158,7 +161,19 @@ class _WaitingRoomScreenState extends State<WaitingRoomScreen> {
         builder: (context, futureSnapshot) {
           return futureSnapshot.connectionState == ConnectionState.waiting
               ? Scaffold(
-                  appBar: AppBar(
+                  appBar: AppBar(  leading: isLoading
+              ? IconButton(
+                  icon: Icon(Icons.arrow_back), // <- 아이콘도 동일한 것을 사용
+                  onPressed: () {
+                    // <- 이전 페이지로 이동.
+                  },
+                )
+              : IconButton(
+                  icon: Icon(Icons.arrow_back), // <- 아이콘도 동일한 것을 사용
+                  onPressed: () {
+                    Navigator.pop(context); // <- 이전 페이지로 이동.
+                  },
+                ),
                     title: Text('채널 이동 중'),
                   ),
                   body: Center(
@@ -166,58 +181,76 @@ class _WaitingRoomScreenState extends State<WaitingRoomScreen> {
                   ),
                 )
               : Scaffold(
-                  appBar: AppBar(
+                  appBar: AppBar(  leading: isLoading
+              ? IconButton(
+                  icon: Icon(Icons.arrow_back), // <- 아이콘도 동일한 것을 사용
+                  onPressed: () {
+                    // <- 이전 페이지로 이동.
+                  },
+                )
+              : IconButton(
+                  icon: Icon(Icons.arrow_back), // <- 아이콘도 동일한 것을 사용
+                  onPressed: () {
+                    Navigator.pop(context); // <- 이전 페이지로 이동.
+                  },
+                ),
                     title: Text('대기방 이름'),
-                    actions: isLeader
-                        ? [
-                            IconButton(
-                                onPressed: () async {
-                                  var membersInfo = await FirebaseFirestore
-                                      .instance
-                                      .collection('waiting-groups')
-                                      .doc(groupId)
-                                      .get();
-
-                                  Navigator.of(context).pop();
-                                  if ((membersInfo['membersInfo'] as List)
-                                          .length ==
-                                      1) {
-                                    await deleteWaitingChannel();
-                                  } else {
-                                    await exit();
-                                  }
-                                },
-                                icon: Icon(Icons.exit_to_app)),
-                            IconButton(
-                                onPressed: () async {
-                                  final channelMaking =
-                                      Provider.of<ChannelMaking>(context,
-                                          listen: false);
-                                  await channelMaking
-                                      .changeRealChannel(groupId);
-                                  goto(groupId, context);
-                                  await deleteWaitingChannel();
-                                },
-                                icon: Icon(Icons.check))
-                          ]
-                        : (isIn
+                    actions: isLoading
+                        ? []
+                        : isLeader
                             ? [
                                 IconButton(
-                                    onPressed: () {
-                                      exit();
+                                    onPressed: () async {
+                                      var membersInfo = await FirebaseFirestore
+                                          .instance
+                                          .collection('waiting-groups')
+                                          .doc(groupId)
+                                          .get();
+
                                       Navigator.of(context).pop();
+                                      if ((membersInfo['membersInfo'] as List)
+                                              .length ==
+                                          1) {
+                                        await deleteWaitingChannel();
+                                      } else {
+                                        await exit();
+                                      }
                                     },
-                                    icon: Icon(Icons.exit_to_app))
+                                    icon: Icon(Icons.exit_to_app)),
+                                IconButton(
+                                    onPressed: () async {
+                                      setState(() {
+                                        isLoading = true;
+                                      });
+
+                                      final channelMaking =
+                                          Provider.of<ChannelMaking>(context,
+                                              listen: false);
+                                      await channelMaking
+                                          .changeRealChannel(groupId);
+                                      goto(groupId, context);
+                                      await deleteWaitingChannel();
+                                    },
+                                    icon: Icon(Icons.check))
                               ]
-                            : (isFull
-                                ? []
-                                : [
+                            : (isIn
+                                ? [
                                     IconButton(
                                         onPressed: () {
-                                          add();
+                                          exit();
+                                          Navigator.of(context).pop();
                                         },
-                                        icon: Icon(Icons.add))
-                                  ])),
+                                        icon: Icon(Icons.exit_to_app))
+                                  ]
+                                : (isFull
+                                    ? []
+                                    : [
+                                        IconButton(
+                                            onPressed: () {
+                                              add();
+                                            },
+                                            icon: Icon(Icons.add))
+                                      ])),
                   ),
                   body: StreamBuilder(
                       stream: FirebaseFirestore.instance
@@ -231,9 +264,10 @@ class _WaitingRoomScreenState extends State<WaitingRoomScreen> {
                             child: const CircularProgressIndicator(),
                           );
                         }
-                        final creatorId = userSnapshot.data?.data()?['creatorId'];
+                        final creatorId =
+                            userSnapshot.data?.data()?['creatorId'];
                         final userDocs =
-                            userSnapshot.data?.data()?['membersInfo'];
+                            userSnapshot.data?.data()?['membersInfo'] ?? [];
                         final menList = (userDocs as List)
                             .where(
                                 (element) => element['member_gender'] == '남자')
@@ -242,8 +276,7 @@ class _WaitingRoomScreenState extends State<WaitingRoomScreen> {
                             .where(
                                 (element) => element['member_gender'] == '여자')
                             .toList();
-                        print(menList);
-                        print(womenList);
+
                         return Column(
                           children: [
                             GridView.builder(
@@ -257,8 +290,8 @@ class _WaitingRoomScreenState extends State<WaitingRoomScreen> {
                                         crossAxisSpacing: 10,
                                         mainAxisSpacing: 10),
                                 itemBuilder: (ctx, i) {
-                                      var halfI1 = (i / 2).toInt();
-                                  var halfI2 = (i - 1 / 2).toInt();
+                                  var halfI1 = (i / 2).toInt();
+                                  var halfI2 = ((i - 1) / 2).toInt();
                                   if (i % 2 == 0) {
                                     print(halfI1);
                                     //남자
@@ -269,7 +302,7 @@ class _WaitingRoomScreenState extends State<WaitingRoomScreen> {
                                           child: GridTile(
                                             child: GestureDetector(
                                               onTap: () {
-                                              menList[halfI1]['memberId'] ==
+                                                menList[halfI1]['memberId'] ==
                                                         FirebaseAuth.instance
                                                             .currentUser?.uid
                                                     ? null
@@ -310,7 +343,7 @@ class _WaitingRoomScreenState extends State<WaitingRoomScreen> {
                                                                               .routeName,
                                                                           arguments: {
                                                                             'image_url':
-                                                                               menList[halfI1]['member_image_url'],
+                                                                                menList[halfI1]['member_image_url'],
                                                                             'username':
                                                                                 menList[halfI1]['membername'],
                                                                             'uid':
@@ -331,8 +364,9 @@ class _WaitingRoomScreenState extends State<WaitingRoomScreen> {
                                               child: FadeInImage(
                                                 placeholder: AssetImage(
                                                     'assets/images/person.png'),
-                                                image: NetworkImage(menList[halfI1]
-                                                    ['member_image_url']),
+                                                image: NetworkImage(
+                                                    menList[halfI1]
+                                                        ['member_image_url']),
                                                 fit: BoxFit.cover,
                                               ),
                                             ),
@@ -403,7 +437,7 @@ class _WaitingRoomScreenState extends State<WaitingRoomScreen> {
                                     }
                                   } else {
                                     //여자
-                                 
+
                                     if (womenList.length > halfI2) {
                                       return ClipRRect(
                                         child: Container(
@@ -411,7 +445,7 @@ class _WaitingRoomScreenState extends State<WaitingRoomScreen> {
                                           child: GridTile(
                                             child: GestureDetector(
                                               onTap: () {
-                                            womenList[halfI2]['memberId'] ==
+                                                womenList[halfI2]['memberId'] ==
                                                         FirebaseAuth.instance
                                                             .currentUser?.uid
                                                     ? null
@@ -426,7 +460,7 @@ class _WaitingRoomScreenState extends State<WaitingRoomScreen> {
                                                                     ? TextButton(
                                                                         onPressed:
                                                                             () {
-                                                                          exitOthers( womenList[halfI2]
+                                                                          exitOthers(womenList[halfI2]
                                                                               [
                                                                               'memberId']);
                                                                         },
@@ -452,11 +486,11 @@ class _WaitingRoomScreenState extends State<WaitingRoomScreen> {
                                                                               .routeName,
                                                                           arguments: {
                                                                             'image_url':
-                                                                                 womenList[halfI2]['member_image_url'],
+                                                                                womenList[halfI2]['member_image_url'],
                                                                             'username':
-                                                                                 womenList[halfI2]['membername'],
+                                                                                womenList[halfI2]['membername'],
                                                                             'uid':
-                                                                                 womenList[halfI2]['memberId'],
+                                                                                womenList[halfI2]['memberId'],
                                                                           });
                                                                     },
                                                                     child: Text(
@@ -473,20 +507,22 @@ class _WaitingRoomScreenState extends State<WaitingRoomScreen> {
                                               child: FadeInImage(
                                                 placeholder: AssetImage(
                                                     'assets/images/person.png'),
-                                                image: NetworkImage( womenList[halfI2]
-                                                    ['member_image_url']),
+                                                image: NetworkImage(
+                                                    womenList[halfI2]
+                                                        ['member_image_url']),
                                                 fit: BoxFit.cover,
                                               ),
                                             ),
                                             footer: creatorId ==
-                                                    womenList[halfI2]['memberId']
+                                                    womenList[halfI2]
+                                                        ['memberId']
                                                 ? GridTileBar(
                                                     backgroundColor:
                                                         Color.fromARGB(
                                                             221, 88, 84, 84),
                                                     title: Center(
                                                       child: Text(
-                                                          '${ womenList[halfI2]['membername']}(방장)'),
+                                                          '${womenList[halfI2]['membername']}(방장)'),
                                                     ))
                                                 : GridTileBar(
                                                     backgroundColor:
@@ -494,7 +530,7 @@ class _WaitingRoomScreenState extends State<WaitingRoomScreen> {
                                                             221, 88, 84, 84),
                                                     title: Center(
                                                       child: Text(
-                                                          '${ womenList[halfI2]['membername']}'),
+                                                          '${womenList[halfI2]['membername']}'),
                                                     )),
                                           ),
                                         ),

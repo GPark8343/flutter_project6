@@ -1,18 +1,10 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:ifc_project1/providers/chat/all_ids.dart';
 import 'package:ifc_project1/providers/chat/all_ids_invite.dart';
-import 'package:ifc_project1/providers/chat/channel_making.dart';
 import 'package:ifc_project1/providers/chat/waiting_channel_making.dart';
-
-import 'package:ifc_project1/screens/chat/chat_screen.dart';
 import 'package:ifc_project1/widgets/friends/friend-item-invite.dart';
-
-import 'package:ifc_project1/widgets/friends/friend-item.dart';
-
 import 'package:provider/provider.dart';
-import 'package:uuid/uuid.dart';
 
 class WaitingChannelAddScreen extends StatefulWidget {
   static const routeName = '/waiting-channel-add';
@@ -26,10 +18,6 @@ class WaitingChannelAddScreen extends StatefulWidget {
 class _WaitingChannelAddScreenState extends State<WaitingChannelAddScreen> {
   var isLoading = false;
 
-  void setStateTool() async {
-    setState(() {});
-  }
-
   @override
   Widget build(BuildContext context) {
     final leftMenNumbers = (ModalRoute.of(context)?.settings.arguments
@@ -40,6 +28,19 @@ class _WaitingChannelAddScreenState extends State<WaitingChannelAddScreen> {
         (ModalRoute.of(context)?.settings.arguments as Map)['groupId'];
     return Scaffold(
         appBar: AppBar(
+          leading: isLoading
+              ? IconButton(
+                  icon: Icon(Icons.arrow_back), // <- 아이콘도 동일한 것을 사용
+                  onPressed: () {
+                    // <- 이전 페이지로 이동.
+                  },
+                )
+              : IconButton(
+                  icon: Icon(Icons.arrow_back), // <- 아이콘도 동일한 것을 사용
+                  onPressed: () {
+                    Navigator.pop(context); // <- 이전 페이지로 이동.
+                  },
+                ),
           actions: isLoading
               ? []
               : [
@@ -57,12 +58,13 @@ class _WaitingChannelAddScreenState extends State<WaitingChannelAddScreen> {
                             Provider.of<AllIdsInvite>(context, listen: false);
                         var _menNumber = 0;
                         var _womenNumber = 0;
+                        var _alreadyMemberNumber = 0;
 
                         await FirebaseFirestore.instance
                             .collection('users')
                             .where('gender', isEqualTo: '여자')
                             .get()
-                            .then((value) => _womenNumber= value.docs
+                            .then((value) => _womenNumber = value.docs
                                 .where((element) =>
                                     userIds.contains(element.data()['uid']))
                                 .toList()
@@ -71,22 +73,33 @@ class _WaitingChannelAddScreenState extends State<WaitingChannelAddScreen> {
                             .collection('users')
                             .where('gender', isEqualTo: '남자')
                             .get()
-                            .then((value) =>_menNumber= value.docs
+                            .then((value) => _menNumber = value.docs
                                 .where((element) =>
                                     userIds.contains(element.data()['uid']))
                                 .toList()
                                 .length);
+                        await FirebaseFirestore.instance
+                            .collection('waiting-groups')
+                            .doc(groupId)
+                            .get()
+                            .then((value) => _alreadyMemberNumber =
+                                (value.data()?['membersInfo'] as List)
+                                    .where((element) =>
+                                        userIds.contains(element['memberId']))
+                                    .toList()
+                                    .length);
                         print(_menNumber);
                         print(_womenNumber);
+                        print(_alreadyMemberNumber);
                         if (_menNumber > leftMenNumbers ||
                             _womenNumber > leftWomenNumbers ||
+                            _alreadyMemberNumber > 0 ||
                             userIds.isEmpty) {
                           setState(() {});
 
                           //남은방 수 초과 아님 이미 있는 채팅방 또 생성X
 
                         } else {
-                          setStateTool();
                           final waitingChannelMaking =
                               Provider.of<WaitingChannelMaking>(context,
                                   listen: false);

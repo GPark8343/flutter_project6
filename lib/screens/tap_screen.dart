@@ -11,6 +11,7 @@ import 'package:ifc_project1/screens/chat/user_list_screen.dart';
 import 'package:ifc_project1/screens/friends/ban_screen.dart';
 import 'package:ifc_project1/screens/room/bulletin_board_screen.dart';
 import 'package:ifc_project1/screens/room/room_add_screen.dart';
+import 'package:ifc_project1/widgets/app_drawer.dart';
 
 import 'package:provider/provider.dart';
 
@@ -53,40 +54,11 @@ class _TapScreenState extends State<TapScreen> {
     return FutureBuilder(
         future: userCheck.userCheck(),
         builder: (context, futureSnapshot) {
-          return Scaffold(
+          return Scaffold(drawer: AppDrawer(),
             appBar: !isEnrolled
                 ? AppBar(
                     title: Text('먼저 양식 제출하셈'),
-                    actions: [
-                      DropdownButton(
-                          underline: Container(),
-                          icon: Icon(
-                            Icons.more_vert,
-                            color: Theme.of(context).primaryIconTheme.color,
-                          ),
-                          items: [
-                            DropdownMenuItem(
-                              child: Container(
-                                child: Row(
-                                  children: [
-                                    Icon(Icons.exit_to_app),
-                                    SizedBox(
-                                      width: 8,
-                                    ),
-                                    Text('Logout')
-                                  ],
-                                ),
-                              ),
-                              value: 'logout',
-                            )
-                          ],
-                          onChanged: (itemIdentifier) {
-                            if (itemIdentifier == 'logout') {
-                              FirebaseAuth.instance.signOut();
-                              GoogleSignIn().signOut();
-                            }
-                          })
-                    ],
+                    
                   )
                 : AppBar(
                     title: Text(_pages[_selectedPageIndex]['title'] as String),
@@ -107,36 +79,7 @@ class _TapScreenState extends State<TapScreen> {
                           ]
                         : _selectedPageIndex == 4
                             ? [
-                                DropdownButton(
-                                    underline: Container(),
-                                    icon: Icon(
-                                      Icons.more_vert,
-                                      color: Theme.of(context)
-                                          .primaryIconTheme
-                                          .color,
-                                    ),
-                                    items: [
-                                      DropdownMenuItem(
-                                        child: Container(
-                                          child: Row(
-                                            children: [
-                                              Icon(Icons.exit_to_app),
-                                              SizedBox(
-                                                width: 8,
-                                              ),
-                                              Text('Logout')
-                                            ],
-                                          ),
-                                        ),
-                                        value: 'logout',
-                                      )
-                                    ],
-                                    onChanged: (itemIdentifier) {
-                                      if (itemIdentifier == 'logout') {
-                                        FirebaseAuth.instance.signOut();
-                                        GoogleSignIn().signOut();
-                                      }
-                                    })
+                               
                               ]
                             : _selectedPageIndex == 1
                                 ? [
